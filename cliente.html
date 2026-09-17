@@ -247,10 +247,10 @@ tbody tr:hover{background:rgba(255,255,255,.06)}
 
         <div class="feature-grid">
             <div class="feature-card glass" onclick="navigateTo('agendar')">
-                <div class="fc-icon"><i class="ti ti-calendar-plus"></i></div>
-                <h3>Agendar servicio</h3>
-                <p>Solicita un nuevo servicio de fumigación, desratización o sanitización en la fecha que prefieras.</p>
-                <span class="fc-action">Agendar ahora <i class="ti ti-arrow-right"></i></span>
+                <div class="fc-icon"><i class="ti ti-file-invoice"></i></div>
+                <h3>Solicitar y cotizar servicio</h3>
+                <p>Solicita un servicio, selecciona sus características y obtén una cotización automática.</p>
+                <span class="fc-action">Solicitar ahora <i class="ti ti-arrow-right"></i></span>
             </div>
             <div class="feature-card glass" onclick="navigateTo('estado')">
                 <div class="fc-icon"><i class="ti ti-search"></i></div>
@@ -293,76 +293,229 @@ tbody tr:hover{background:rgba(255,255,255,.06)}
     </div>
 
     <!-- ==================== AGENDAR ==================== -->
-    <div id="screen-agendar" class="screen">
-        <div class="detail-header">
-            <button class="back-btn" onclick="goHome()"><i class="ti ti-arrow-left"></i></button>
-            <h2>Agendar servicio</h2>
-        </div>
-
-        <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px">
-            <div class="detail-card glass-strong fade-enter">
-                <div class="dc-title"><i class="ti ti-clipboard-text"></i> Datos del servicio</div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Tipo de servicio</label>
-                        <select>
-                            <option>Fumigación General</option>
-                            <option>Desratización</option>
-                            <option>Desinsectación</option>
-                            <option>Sanitización</option>
-                            <option>Control de Termitas</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Urgencia</label>
-                        <select>
-                            <option>Normal (próximos 7 días)</option>
-                            <option>Urgente (24-48 hrs)</option>
-                            <option>Programado</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Fecha preferida</label>
-                        <input type="date" value="2026-06-28">
-                    </div>
-                    <div class="form-group">
-                        <label>Horario preferido</label>
-                        <select>
-                            <option>08:00 - 10:00</option>
-                            <option>10:00 - 12:00</option>
-                            <option>12:00 - 14:00</option>
-                            <option>14:00 - 16:00</option>
-                            <option>16:00 - 18:00</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Dirección del servicio</label>
-                    <input type="text" value="Av. Central 123, Col. Centro">
-                </div>
-                <div class="form-group">
-                    <label>Notas adicionales</label>
-                    <textarea placeholder="Indica detalles como áreas específicas a tratar..."></textarea>
-                </div>
-                <button class="btn btn-primary" data-toast="Servicio solicitado correctamente"><i class="ti ti-send"></i> Solicitar servicio</button>
-            </div>
-
-            <div class="detail-card glass-strong fade-enter">
-                <div class="dc-title"><i class="ti ti-info-circle"></i> Próximos servicios</div>
-                <div style="font-size:12px;color:var(--text-secondary);margin-bottom:12px">Tus servicios programados</div>
-                <div style="padding:10px 12px;border-radius:10px;background:rgba(37,99,235,.06);margin-bottom:8px">
-                    <div style="font-size:13px;font-weight:500">Sanitización</div>
-                    <div style="font-size:11px;color:var(--text-secondary)">16 jun 2026 &middot; 13:00</div>
-                </div>
-                <div style="padding:10px 12px;border-radius:10px;background:rgba(37,99,235,.06)">
-                    <div style="font-size:13px;font-weight:500">Fumigación General</div>
-                    <div style="font-size:11px;color:var(--text-secondary)">28 jun 2026 &middot; 10:00</div>
-                </div>
-            </div>
-        </div>
+ <!-- ==================== SOLICITAR Y COTIZAR ==================== -->
+<div id="screen-agendar" class="screen">
+    <div class="detail-header">
+        <button class="back-btn" onclick="goHome()">
+            <i class="ti ti-arrow-left"></i>
+        </button>
+        <h2>Solicitar y cotizar servicio</h2>
     </div>
+
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px">
+
+        <!-- FORMULARIO DE SOLICITUD -->
+        <div class="detail-card glass-strong fade-enter">
+
+            <div class="dc-title">
+                <i class="ti ti-clipboard-text"></i>
+                Datos de la solicitud
+            </div>
+
+            <!-- Tipo de servicio -->
+            <div class="form-group">
+                <label>Tipo de servicio</label>
+                <select id="tipoServicio" onchange="calcularCotizacion()">
+                    <option value="">Selecciona un servicio</option>
+                    <option value="fumigacion">Fumigación General</option>
+                    <option value="desratizacion">Desratización</option>
+                    <option value="desinsectacion">Desinsectación</option>
+                    <option value="sanitizacion">Sanitización</option>
+                    <option value="termitas">Control de Termitas</option>
+                </select>
+            </div>
+
+            <!-- Características del servicio -->
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label>Tipo de inmueble</label>
+                    <select id="tipoInmueble" onchange="calcularCotizacion()">
+                        <option value="">Selecciona</option>
+                        <option value="residencial">Residencial</option>
+                        <option value="comercial">Comercial</option>
+                        <option value="industrial">Industrial</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Área aproximada (m²)</label>
+                    <input
+                        type="number"
+                        id="areaServicio"
+                        min="1"
+                        placeholder="Ej. 120"
+                        oninput="calcularCotizacion()"
+                    >
+                </div>
+
+            </div>
+
+            <!-- Frecuencia -->
+            <div class="form-group">
+                <label>Frecuencia del servicio</label>
+                <select id="frecuenciaServicio" onchange="calcularCotizacion()">
+                    <option value="unica">Servicio único</option>
+                    <option value="mensual">Mensual</option>
+                    <option value="trimestral">Trimestral</option>
+                </select>
+            </div>
+
+            <!-- Productos -->
+            <div class="form-group">
+                <label>Producto requerido</label>
+                <select id="productoServicio" onchange="calcularCotizacion()">
+                    <option value="ninguno">Sin producto adicional</option>
+                    <option value="producto1">Producto para control de plagas</option>
+                    <option value="producto2">Producto para desratización</option>
+                    <option value="producto3">Producto para sanitización</option>
+                </select>
+            </div>
+
+            <!-- Fecha y horario -->
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label>Fecha preferida</label>
+                    <input
+                        type="date"
+                        id="fechaServicio"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>Horario preferido</label>
+                    <select id="horarioServicio">
+                        <option>08:00 - 10:00</option>
+                        <option>10:00 - 12:00</option>
+                        <option>12:00 - 14:00</option>
+                        <option>14:00 - 16:00</option>
+                        <option>16:00 - 18:00</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <!-- Dirección -->
+            <div class="form-group">
+                <label>Dirección del servicio</label>
+                <input
+                    type="text"
+                    id="direccionServicio"
+                    placeholder="Indica la dirección donde se realizará el servicio"
+                >
+            </div>
+
+            <!-- Notas -->
+            <div class="form-group">
+                <label>Notas adicionales</label>
+                <textarea
+                    id="notasServicio"
+                    placeholder="Indica detalles como áreas específicas a tratar, tipo de plaga observada u otra información relevante..."
+                ></textarea>
+            </div>
+
+            <!-- Botón -->
+            <button
+                class="btn btn-primary"
+                onclick="solicitarServicio()"
+            >
+                <i class="ti ti-send"></i>
+                Solicitar servicio
+            </button>
+
+        </div>
+
+
+        <!-- COTIZACIÓN AUTOMÁTICA -->
+        <div>
+
+            <div class="detail-card glass-strong fade-enter">
+
+                <div class="dc-title">
+                    <i class="ti ti-file-invoice"></i>
+                    Cotización estimada
+                </div>
+
+                <div style="font-size:12px;color:var(--text-secondary);margin-bottom:16px">
+                    El sistema calcula automáticamente el costo según los datos ingresados.
+                </div>
+
+                <div id="cotizacionVacia"
+                     style="text-align:center;padding:24px 10px;color:var(--text-secondary)">
+                    <i class="ti ti-calculator"
+                       style="font-size:32px;display:block;margin-bottom:8px"></i>
+
+                    <div style="font-size:13px">
+                        Completa los datos del servicio para generar la cotización.
+                    </div>
+                </div>
+
+                <div id="cotizacionResultado" style="display:none">
+
+                    <div style="padding:12px;border-radius:10px;background:rgba(212,233,0,.08);margin-bottom:12px">
+
+                        <div style="font-size:11px;color:var(--text-secondary);font-weight:600">
+                            SERVICIO
+                        </div>
+
+                        <div id="resumenServicio"
+                             style="font-size:13px;font-weight:600;margin-top:3px">
+                            -
+                        </div>
+
+                    </div>
+
+                    <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:12px">
+                        <span>Servicio base</span>
+                        <strong id="precioServicio">$0.00</strong>
+                    </div>
+
+                    <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:12px">
+                        <span>Producto adicional</span>
+                        <strong id="precioProducto">$0.00</strong>
+                    </div>
+
+                    <div style="display:flex;justify-content:space-between;padding:12px 0;margin-top:8px;border-top:1px solid rgba(15,23,42,.1)">
+                        <span style="font-weight:600">Total estimado</span>
+                        <strong id="totalCotizacion"
+                                style="font-size:20px;color:#4d5200">
+                            $0.00
+                        </strong>
+                    </div>
+
+                    <div style="margin-top:12px">
+                        <span class="badge blue">
+                            <i class="ti ti-sparkles"></i>
+                            Cotización automática
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RESUMEN -->
+            <div class="detail-card glass-strong fade-enter">
+
+                <div class="dc-title">
+                    <i class="ti ti-info-circle"></i>
+                    Información
+                </div>
+
+                <div style="font-size:12px;color:var(--text-secondary);line-height:1.6">
+                    La cotización se genera utilizando los servicios y productos
+                    registrados en el sistema y sus precios configurados.
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+       
 
     <!-- ==================== ESTADO ==================== -->
     <div id="screen-estado" class="screen">
@@ -599,6 +752,51 @@ function doLogin() {
 function doLogout() {
     document.getElementById('loginOverlay').classList.remove('hidden');
     document.getElementById('appContent').style.display = 'none';
+}
+
+// ==================== COTIZACIÓN AUTOMÁTICA ====================
+
+const preciosServicios = {
+    fumigacion: 250,
+    desratizacion: 300,
+    desinsectacion: 275,
+    sanitizacion: 350,
+    termitas: 500
+};
+
+const preciosProductos = {
+    ninguno: 0,
+    producto1: 50,
+    producto2: 75,
+    producto3: 60
+};
+
+function calcularCotizacion() {
+
+    const servicio = document.getElementById('tipoServicio').value;
+    const producto = document.getElementById('productoServicio').value;
+
+    if (!servicio) {
+        return;
+    }
+
+    const precioServicio = preciosServicios[servicio];
+    const precioProducto = preciosProductos[producto];
+
+    const total = precioServicio + precioProducto;
+
+    document.getElementById('precioServicio').textContent =
+        '$' + precioServicio.toFixed(2);
+
+    document.getElementById('precioProducto').textContent =
+        '$' + precioProducto.toFixed(2);
+
+    document.getElementById('totalCotizacion').textContent =
+        '$' + total.toFixed(2);
+
+    document.getElementById('cotizacionVacia').style.display = 'none';
+
+    document.getElementById('cotizacionResultado').style.display = 'block';
 }
 </script>
 <div id="toastContainer"></div>
