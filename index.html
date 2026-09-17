@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kombat Pest Control</title>
+<link rel="icon" href="logo.jpeg" type="image/jpeg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--sidebar-text:#94a3b8;--sidebar-active:#D4E900;--border:rgba(255,255,255,.2);--bw:0.5px;--primary:#D4E900;--primary-dark:#a8c400;--success:#16a34a;--warning:#d97706;--danger:#dc2626;--info:#0891b2;--text:#0f172a;--text-secondary:#475569;--radius:8px;--font:'Inter',system-ui,sans-serif;--glass-bg:rgba(255,255,255,.12);--glass-border:rgba(255,255,255,.2);--glass-shadow:rgba(212,233,0,.06);--glass-strong-bg:rgba(255,255,255,.35)}
+body{font-family:var(--font);min-height:100vh;overflow:hidden;font-size:14px;background:linear-gradient(135deg,#f7fee7 0%,#ffffff 25%,#f0fdf4 50%,#fefce8 75%,#faf5ff 100%);background-attachment:fixed;color:var(--text)}
+body::before{content:'';position:fixed;top:-25%;left:-5%;width:55%;height:55%;background:radial-gradient(circle,rgba(212,233,0,.08) 0%,transparent 70%);pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;bottom:-25%;right:-5%;width:50%;height:50%;background:radial-gradient(circle,rgba(0,0,0,.04) 0%,transparent 70%);pointer-events:none;z-index:0}
+.glass{background:var(--glass-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:var(--bw) solid var(--glass-border);box-shadow:0 8px 32px var(--glass-shadow)}
+.glass-strong{background:var(--glass-strong-bg);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:var(--bw) solid rgba(255,255,255,.25);box-shadow:0 8px 32px var(--glass-shadow)}
+.layout{display:flex;height:100vh;position:relative;z-index:1}
+/* Sidebar */
+.sidebar{width:240px;background:#2a2a2a;color:var(--sidebar-text);display:flex;flex-direction:column;flex-shrink:0;z-index:100;border-right:1px solid rgba(255,255,255,.04)}
+.sidebar .logo{padding:20px 24px;border-bottom:1px solid rgba(255,255,255,.06)}
+.sidebar .logo h1{font-size:16px;font-weight:700;color:#fff;letter-spacing:-.3px}
+.sidebar .logo span{font-size:11px;color:var(--sidebar-text);display:block;margin-top:2px}
+.sidebar nav{padding:12px 0;flex:1;overflow-y:auto}
+.sidebar nav a{display:flex;align-items:center;gap:10px;padding:10px 24px;color:var(--sidebar-text);text-decoration:none;font-size:13px;font-weight:500;transition:all .15s;cursor:pointer;border-left:3px solid transparent}
+.sidebar nav a:hover{color:#e2e8f0;background:rgba(255,255,255,.08)}
+.sidebar nav a.active{color:#fff;background:rgba(212,233,0,.15);border-left-color:var(--sidebar-active)}
+.sidebar nav a i{font-size:18px;flex-shrink:0}
+.sidebar .version{padding:12px 24px;border-top:1px solid rgba(255,255,255,.06);font-size:11px;color:var(--sidebar-text)}
+.logout-btn{display:flex;align-items:center;gap:8px;padding:10px 24px;color:var(--sidebar-text);text-decoration:none;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;border-top:1px solid rgba(255,255,255,.06);margin-top:auto}
+.logout-btn:hover{color:#f87171}
+/* Login overlay */
+.login-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:1000;transition:opacity .4s;background:linear-gradient(135deg,#dbeafe 0%,#eff6ff 25%,#f0fdf4 50%,#e0f2fe 75%,#ede9fe 100%)}
+.login-overlay::before{content:'';position:fixed;top:-25%;left:-5%;width:55%;height:55%;background:radial-gradient(circle,rgba(37,99,235,.12) 0%,transparent 70%);pointer-events:none}
+.login-overlay::after{content:'';position:fixed;bottom:-25%;right:-5%;width:50%;height:50%;background:radial-gradient(circle,rgba(6,182,212,.08) 0%,transparent 70%);pointer-events:none}
+.login-overlay.hidden{opacity:0;pointer-events:none}
+.login-box{background:rgba(255,255,255,.3);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:var(--bw) solid rgba(255,255,255,.25);border-radius:16px;padding:36px 32px 32px;width:360px;box-shadow:0 16px 48px rgba(37,99,235,.06)}
+.login-box .lb-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px}
+.login-box .lb-logo i{font-size:34px;color:var(--primary)}
+.login-box .lb-logo h1{font-size:20px;font-weight:700;color:var(--text)}
+.login-box .lb-logo span{font-weight:300;color:var(--text-secondary)}
+.login-box .lb-logo small{display:block;font-size:11px;font-weight:400;color:var(--text-secondary);margin-top:2px}
+.login-box .lb-sub{font-size:13px;color:var(--text-secondary);margin-bottom:20px}
+.login-box .form-group{margin-bottom:16px}
+.login-box .form-group label{display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px}
+.login-box .form-group .input-wrap{display:flex;align-items:center;background:rgba(255,255,255,.3);backdrop-filter:blur(8px);border:var(--bw) solid rgba(255,255,255,.2);border-radius:10px;padding:0 10px;transition:border .2s}
+.login-box .form-group .input-wrap:focus-within{border-color:var(--primary)}
+.login-box .form-group .input-wrap i{font-size:18px;color:var(--text-secondary)}
+.login-box .form-group .input-wrap input{flex:1;border:none;background:transparent;padding:10px 8px;font-size:13px;font-family:var(--font);color:var(--text);outline:none}
+.login-box .btn{width:100%;padding:10px;border-radius:10px;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:var(--font);transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.login-box .btn-primary{background:var(--primary);color:#0f172a}
+.login-box .btn-primary:hover{background:var(--primary-dark)}
+/* Main */
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+/* Topbar */
+.topbar{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;background:rgba(255,255,255,.3);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:var(--bw) solid rgba(255,255,255,.2);flex-shrink:0}
+.topbar .left{display:flex;align-items:center;gap:8px}
+.topbar .left h2{font-size:16px;font-weight:600;color:var(--text)}
+.topbar .right{display:flex;align-items:center;gap:16px}
+.topbar .right .user{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text)}
+.topbar .right .user .avatar{width:32px;height:32px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600}
+.topbar .right .date{font-size:12px;color:var(--text-secondary)}
+.topbar .right .notif{position:relative;cursor:pointer;color:var(--text-secondary)}
+.topbar .right .notif .dot{width:6px;height:6px;border-radius:50%;background:var(--danger);position:absolute;top:-2px;right:-2px}
+/* Content */
+.content{flex:1;overflow-y:auto;padding:24px 32px}
+.screen{display:none}
+.screen.active{display:block}
+/* Page header */
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.page-header h2{font-size:18px;font-weight:600}
+.page-header .sub{font-size:13px;color:var(--text-secondary);margin-top:2px}
+/* Cards */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:24px}
+.metric-card{border-radius:12px;padding:20px;border:var(--bw) solid rgba(255,255,255,.2);background:rgba(255,255,255,.25);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.metric-card .icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:20px}
+.metric-card .label{font-size:12px;color:var(--text-secondary);margin-bottom:4px;font-weight:500}
+.metric-card .value{font-size:24px;font-weight:700;color:var(--text)}
+.metric-card .change{font-size:12px;margin-top:4px;color:var(--text-secondary)}
+.metric-card .change.up{color:var(--success)}
+.metric-card .change.down{color:var(--danger)}
+.metric-card.blue .icon{background:rgba(212,233,0,.15);color:var(--primary)}
+.metric-card.green .icon{background:rgba(22,163,74,.12);color:var(--success)}
+.metric-card.purple .icon{background:rgba(124,58,237,.12);color:#7c3aed}
+.metric-card.orange .icon{background:rgba(217,119,6,.12);color:var(--warning)}
+/* Card component */
+.card{border-radius:12px;background:rgba(255,255,255,.35);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:var(--bw) solid rgba(255,255,255,.25);overflow:hidden;margin-bottom:16px}
+.card-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:var(--bw) solid rgba(255,255,255,.15)}
+.card-header h3{font-size:14px;font-weight:600}
+.card-body{padding:16px 20px}
+/* Tables */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{text-align:left;padding:10px 12px;font-weight:600;color:var(--text-secondary);font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:var(--bw) solid rgba(255,255,255,.15)}
+tbody td{padding:10px 12px;border-bottom:var(--bw) solid rgba(255,255,255,.1);color:var(--text)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:rgba(255,255,255,.1)}
+/* Badges */
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;line-height:1.4}
+.badge.yellow{background:rgba(217,119,6,.12);color:#92400e}
+.badge.blue{background:rgba(37,99,235,.12);color:#1e40af}
+.badge.green{background:rgba(5,150,105,.12);color:#166534}
+.badge.red{background:rgba(220,38,38,.12);color:#991b1b}
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;border:var(--bw) solid rgba(255,255,255,.2);background:rgba(255,255,255,.25);backdrop-filter:blur(8px);color:var(--text);cursor:pointer;transition:all .15s;font-family:var(--font)}
+.btn:hover{background:rgba(255,255,255,.4)}
+.btn-primary{background:var(--primary);color:#0f172a;border-color:var(--primary)}
+.btn-primary:hover{background:var(--primary-dark)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn i{font-size:16px}
+.btn-group{display:flex;gap:6px;flex-wrap:wrap}
+/* Forms */
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:8px 10px;border:var(--bw) solid rgba(255,255,255,.2);border-radius:8px;font-size:13px;font-family:var(--font);color:var(--text);background:rgba(255,255,255,.3);backdrop-filter:blur(8px);outline:none;transition:border .15s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--primary)}
+.form-group textarea{resize:vertical;min-height:60px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+/* Progress bars */
+.progress{height:8px;border-radius:100px;background:rgba(255,255,255,.3);overflow:hidden;margin-top:6px}
+.progress-bar{height:100%;border-radius:100px;transition:width .6s ease}
+/* Inventory items */
+.inv-item{padding:10px 0;border-bottom:var(--bw) solid rgba(255,255,255,.1)}
+.inv-item:last-child{border-bottom:none}
+.inv-item .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}
+.inv-item .name{font-size:13px;font-weight:500}
+.inv-item .stock{font-size:12px;color:var(--text-secondary)}
+.inv-item .stock .val{font-weight:600}
+/* Grid layouts */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+/* Calendar */
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.calendar-grid .day-header{text-align:center;font-size:11px;font-weight:600;color:var(--text-secondary);padding:8px 0;text-transform:uppercase}
+.calendar-grid .day{min-height:70px;padding:4px 6px;border:var(--bw) solid rgba(255,255,255,.15);border-radius:6px;font-size:12px;cursor:pointer;transition:background .15s;background:rgba(255,255,255,.08);backdrop-filter:blur(4px)}
+.calendar-grid .day:hover{background:rgba(255,255,255,.18)}
+.calendar-grid .day.other-month{background:rgba(255,255,255,.04);color:var(--text-secondary)}
+.calendar-grid .day .date{font-weight:600;margin-bottom:2px}
+.calendar-grid .day .event{font-size:10px;padding:1px 4px;border-radius:3px;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.calendar-grid .day .event.blue{background:rgba(37,99,235,.15);color:#1e40af}
+.calendar-grid .day .event.green{background:rgba(5,150,105,.15);color:#166534}
+.calendar-grid .day .event.orange{background:rgba(217,119,6,.15);color:#92400e}
+.calendar-nav{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.calendar-nav h3{font-size:16px;font-weight:600;min-width:200px;text-align:center}
+.calendar-nav button{background:rgba(255,255,255,.15);backdrop-filter:blur(8px);border:var(--bw) solid rgba(255,255,255,.15);border-radius:8px;padding:6px 10px;cursor:pointer;color:var(--text)}
+/* Filter bar */
+.filter-bar{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.filter-bar .search{flex:1;min-width:200px;position:relative}
+.filter-bar .search input{padding-left:32px;width:100%}
+.filter-bar .search i{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-secondary);font-size:16px}
+/* Search input */
+input[type="text"],input[type="search"]{padding:8px 10px;border:var(--bw) solid rgba(255,255,255,.2);border-radius:8px;font-size:13px;font-family:var(--font);color:var(--text);background:rgba(255,255,255,.25);backdrop-filter:blur(8px);outline:none;transition:border .15s;width:100%}
+input[type="text"]:focus,input[type="search"]:focus{border-color:var(--primary)}
+/* Misc */
+.flex-between{display:flex;justify-content:space-between;align-items:center}
+.mb-16{margin-bottom:16px}
+.mt-16{margin-top:16px}
+.gap-12{gap:12px}
+.text-center{text-align:center}
+.text-secondary{color:var(--text-secondary)}
+.w-full{width:100%}
+/* Right sidebar / panel for forms */
+.form-panel{border-radius:12px;padding:20px;background:rgba(255,255,255,.35);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:var(--bw) solid rgba(255,255,255,.25)}
+.form-panel h3{font-size:14px;font-weight:600;margin-bottom:16px;padding-bottom:12px;border-bottom:var(--bw) solid rgba(255,255,255,.15)}
+/* Pagos summary cards */
+.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.summary-card{border-radius:12px;padding:20px;border:var(--bw) solid rgba(255,255,255,.2);text-align:center;background:rgba(255,255,255,.25);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.summary-card .sc-value{font-size:28px;font-weight:700;margin-bottom:4px}
+.summary-card .sc-label{font-size:12px;color:var(--text-secondary);font-weight:500}
+.summary-card .sc-icon{font-size:24px;margin-bottom:8px}
+/* Tabs / filters */
+.filter-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.filter-tabs .tab{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:var(--bw) solid rgba(255,255,255,.2);background:rgba(255,255,255,.15);backdrop-filter:blur(8px);color:var(--text-secondary);transition:all .15s;font-family:var(--font)}
+.filter-tabs .tab:hover{border-color:var(--primary);color:var(--primary)}
+.filter-tabs .tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+/* Scrollbar */
+.content::-webkit-scrollbar{width:6px}
+.content::-webkit-scrollbar-track{background:transparent}
+.content::-webkit-scrollbar-thumb{background:rgba(100,116,139,.25);border-radius:3px}
+.content::-webkit-scrollbar-thumb:hover{background:rgba(100,116,139,.4)}
+/* Responsive */
+@media(max-width:1024px){.grid-2,.grid-3{grid-template-columns:1fr}.sidebar{width:200px}.content{padding:16px}.topbar{padding:0 16px}}
+@media(max-width:768px){.sidebar{width:60px}.sidebar .logo h1,.sidebar .logo span,.sidebar nav a span,.sidebar .version{display:none}.sidebar nav a{justify-content:center;padding:12px;border-left:none}.sidebar .logo{padding:16px;text-align:center}.content{padding:12px}.topbar{padding:0 12px}.cards-grid{grid-template-columns:1fr 1fr}.summary-grid{grid-template-columns:1fr}}
+/* Client type badge in table */
+.type-badge{font-size:11px;padding:2px 8px;border-radius:4px;font-weight:500}
+.type-badge.res{background:rgba(37,99,235,.12);color:#1e40af}
+.type-badge.com{background:rgba(5,150,105,.12);color:#166534}
+.type-badge.ind{background:rgba(217,119,6,.12);color:#92400e}
+/* Empty state */
+.empty-state{padding:40px;text-align:center;color:var(--text-secondary)}
+.empty-state i{font-size:40px;margin-bottom:12px;display:block}
+/* Status row coloring */
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+.status-dot.green{background:var(--success)}
+.status-dot.blue{background:var(--primary)}
+.status-dot.yellow{background:var(--warning)}
+.status-dot.red{background:var(--danger)}
+/* Toast */
+#toastContainer{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{display:flex;align-items:center;gap:10px;padding:14px 20px;border-radius:12px;font-size:13px;font-weight:500;background:rgba(255,255,255,.25);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:var(--bw) solid rgba(255,255,255,.2);box-shadow:0 8px 32px rgba(37,99,235,.08);color:var(--text);pointer-events:auto;animation:toastIn .3s ease;max-width:380px}
+.toast i{font-size:20px}
+.toast.toast-success i{color:var(--success)}
+.toast.toast-info i{color:var(--primary)}
+.toast.toast-warning i{color:var(--warning)}
+@keyframes toastIn{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+</style>
+</head>
+<body>
+<div class="login-overlay" id="loginOverlay">
+    <div class="login-box">
+        <div class="lb-logo">
+            <img src="logo.jpeg" alt="Kombat" style="width:36px;height:36px;border-radius:8px;object-fit:cover">
+            <div><h1>Kombat <span>PC</span><small>Sistema de gestión</small></h1></div>
+        </div>
+        <div class="lb-sub">Acceso al panel administrativo</div>
+        <div class="form-group">
+            <label>Usuario</label>
+            <div class="input-wrap">
+                <i class="ti ti-user"></i>
+                <input type="text" placeholder="admin" id="loginUser" onkeydown="if(event.key==='Enter') doLogin()">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Contraseña</label>
+            <div class="input-wrap">
+                <i class="ti ti-lock"></i>
+                <input type="password" placeholder="••••••••" id="loginPass" onkeydown="if(event.key==='Enter') doLogin()">
+            </div>
+        </div>
+        <button class="btn btn-primary" onclick="doLogin();showToast('Sesión iniciada correctamente')"><i class="ti ti-login"></i> Iniciar sesión</button>
+    </div>
+</div>
+<div class="layout" id="appLayout" style="display:none">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo" style="display:flex;align-items:center;gap:10px;padding:14px 20px">
+            <img src="logo.jpeg" alt="Kombat" style="width:32px;height:32px;border-radius:6px;object-fit:cover">
+            <div><h1 style="font-size:15px;font-weight:700;color:#fff;letter-spacing:-.3px">Kombat</h1><span style="font-size:10px;color:var(--sidebar-text)">Pest Control</span></div>
+        </div>
+        <nav>
+            <a data-screen="dashboard" class="active"><i class="ti ti-dashboard"></i><span>Dashboard</span></a>
+            <a data-screen="clientes"><i class="ti ti-users"></i><span>Clientes</span></a>
+            <a data-screen="solicitudes"><i class="ti ti-clipboard-list"></i><span>Solicitudes</span></a>
+            <a data-screen="agenda"><i class="ti ti-calendar"></i><span>Agenda</span></a>
+            <a data-screen="inventario"><i class="ti ti-box"></i><span>Inventario</span></a>
+            <a data-screen="pagos"><i class="ti ti-credit-card"></i><span>Pagos</span></a>
+        </nav>
+        <div class="version">v2.1.0 &mdash; Sistema de gestión</div>
+        <div class="logout-btn" onclick="showToast('Sesión cerrada','info');setTimeout(doLogout,400)"><i class="ti ti-logout"></i><span>Cerrar sesión</span></div>
+    </aside>
+
+    <!-- Main -->
+    <div class="main">
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="left">
+                <h2 id="pageTitle">Dashboard</h2>
+            </div>
+            <div class="right">
+                <span class="date" id="currentDate"></span>
+                <div class="notif"><i class="ti ti-bell"></i><span class="dot"></span></div>
+                <div class="user">
+                    <div class="avatar">AD</div>
+                    <span>Admin</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- ============ DASHBOARD ============ -->
+            <div id="screen-dashboard" class="screen active">
+                <div class="cards-grid">
+                    <div class="metric-card blue">
+                        <div class="icon"><i class="ti ti-spray"></i></div>
+                        <div class="label">Servicios hoy</div>
+                        <div class="value">12</div>
+                        <div class="change up"><i class="ti ti-arrow-up"></i> 3 más que ayer</div>
+                    </div>
+                    <div class="metric-card green">
+                        <div class="icon"><i class="ti ti-users"></i></div>
+                        <div class="label">Clientes activos</div>
+                        <div class="value">156</div>
+                        <div class="change up"><i class="ti ti-arrow-up"></i> +8 este mes</div>
+                    </div>
+                    <div class="metric-card purple">
+                        <div class="icon"><i class="ti ti-currency-dollar"></i></div>
+                        <div class="label">Ingresos del día</div>
+                        <div class="value">$4,560</div>
+                        <div class="change up"><i class="ti ti-arrow-up"></i> +12% vs ayer</div>
+                    </div>
+                    <div class="metric-card orange">
+                        <div class="icon"><i class="ti ti-alert-triangle"></i></div>
+                        <div class="label">Alertas de stock</div>
+                        <div class="value">3</div>
+                        <div class="change down"><i class="ti ti-arrow-down"></i> requiere atención</div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <!-- Servicios del día -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Servicios del día</h3>
+                            <button class="btn btn-sm" data-toast="Mostrando todos los servicios" data-toast-type="info">Ver todos <i class="ti ti-arrow-right"></i></button>
+                        </div>
+                        <div class="card-body" style="padding:0">
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr><th>#</th><th>Cliente</th><th>Servicio</th><th>Técnico</th><th>Hora</th><th>Estado</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>001</td><td>Juan Pérez</td><td>Fumigación</td><td>Roberto Torres</td><td>08:00</td><td><span class="badge green">Completado</span></td></tr>
+                                        <tr><td>002</td><td>María García</td><td>Desratización</td><td>Luis Mendoza</td><td>09:30</td><td><span class="badge blue">En proceso</span></td></tr>
+                                        <tr><td>003</td><td>Carlos López</td><td>Desinsectación</td><td>Roberto Torres</td><td>11:00</td><td><span class="badge blue">En proceso</span></td></tr>
+                                        <tr><td>004</td><td>Ana Martínez</td><td>Sanitización</td><td>Carlos Vega</td><td>13:00</td><td><span class="badge yellow">Pendiente</span></td></tr>
+                                        <tr><td>005</td><td>Roberto Sánchez</td><td>Control termitas</td><td>Ana Rivas</td><td>14:30</td><td><span class="badge yellow">Pendiente</span></td></tr>
+                                        <tr><td>006</td><td>Laura Torres</td><td>Fumigación</td><td>Luis Mendoza</td><td>16:00</td><td><span class="badge yellow">Pendiente</span></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alertas de inventario -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Alertas de inventario</h3>
+                            <button class="btn btn-sm" data-toast="Redirigiendo a inventario..." data-toast-type="info">Ir a inventario <i class="ti ti-arrow-right"></i></button>
+                        </div>
+                        <div class="card-body">
+                            <div class="inv-item">
+                                <div class="top">
+                                    <span class="name">Fipronil 500ml</span>
+                                    <span class="stock"><span class="val" style="color:var(--danger)">18%</span> — 9 unid.</span>
+                                </div>
+                                <div class="progress"><div class="progress-bar" style="width:18%;background:var(--danger)"></div></div>
+                            </div>
+                            <div class="inv-item">
+                                <div class="top">
+                                    <span class="name">Deltametrina 1L</span>
+                                    <span class="stock"><span class="val" style="color:var(--warning)">32%</span> — 16 unid.</span>
+                                </div>
+                                <div class="progress"><div class="progress-bar" style="width:32%;background:var(--warning)"></div></div>
+                            </div>
+                            <div class="inv-item">
+                                <div class="top">
+                                    <span class="name">Trampas gel (caja)</span>
+                                    <span class="stock"><span class="val" style="color:var(--warning)">45%</span> — 9 cajas</span>
+                                </div>
+                                <div class="progress"><div class="progress-bar" style="width:45%;background:var(--warning)"></div></div>
+                            </div>
+                            <div class="inv-item">
+                                <div class="top">
+                                    <span class="name">Mascarillas N95</span>
+                                    <span class="stock"><span class="val" style="color:var(--danger)">12%</span> — 6 unid.</span>
+                                </div>
+                                <div class="progress"><div class="progress-bar" style="width:12%;background:var(--danger)"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ CLIENTES ============ -->
+            <div id="screen-clientes" class="screen">
+                <div class="page-header">
+                    <div>
+                        <h2>Clientes</h2>
+                        <div class="sub">Gestión de clientes registrados</div>
+                    </div>
+                    <button class="btn btn-primary" onclick="showClientForm()" data-toast="Formulario de registro abierto" data-toast-type="info"><i class="ti ti-plus"></i> Nuevo cliente</button>
+                </div>
+
+                <div class="filter-bar">
+                    <div class="search">
+                        <i class="ti ti-search"></i>
+                        <input type="text" placeholder="Buscar clientes...">
+                    </div>
+                    <div class="filter-tabs" id="clientFilters">
+                        <span class="tab active" data-filter="all">Todos</span>
+                        <span class="tab" data-filter="residencial">Residencial</span>
+                        <span class="tab" data-filter="comercial">Comercial</span>
+                        <span class="tab" data-filter="industrial">Industrial</span>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Listado de clientes</h3>
+                            <span class="text-secondary" style="font-size:12px">10 registros</span>
+                        </div>
+                        <div class="card-body" style="padding:0">
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr><th>#</th><th>Nombre</th><th>Tipo</th><th>Teléfono</th><th>Dirección</th><th>Estado</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>001</td><td>Juan Pérez Martínez</td><td><span class="type-badge res">Residencial</span></td><td>555-0101</td><td>Av. Central 123</td><td><span class="badge green">Activo</span></td></tr>
+                                        <tr><td>002</td><td>María García López</td><td><span class="type-badge res">Residencial</span></td><td>555-0102</td><td>Calle Roble 45</td><td><span class="badge green">Activo</span></td></tr>
+                                        <tr><td>003</td><td>Carlos López Hernández</td><td><span class="type-badge com">Comercial</span></td><td>555-0103</td><td>Zona Industrial 7A</td><td><span class="badge green">Activo</span></td></tr>
+                                        <tr><td>004</td><td>Ana Martínez Rodríguez</td><td><span class="type-badge ind">Industrial</span></td><td>555-0104</td><td>Blvd. Norte 890</td><td><span class="badge green">Activo</span></td></tr>
+                                        <tr><td>005</td><td>Roberto Sánchez Díaz</td><td><span class="type-badge com">Comercial</span></td><td>555-0105</td><td>Calle Comercio 56</td><td><span class="badge yellow">Inactivo</span></td></tr>
+                                        <tr><td>006</td><td>Laura Torres Morales</td><td><span class="type-badge res">Residencial</span></td><td>555-0106</td><td>Jardines del Sur 234</td><td><span class="badge green">Activo</span></td></tr>
+                                        <tr><td>007</td><td>Miguel Ángel Ruiz</td><td><span class="type-badge ind">Industrial</span></td><td>555-0107</td><td>Parque Industrial 12</td><td><span class="badge green">Activo</span></td></tr>
+                                        <tr><td>008</td><td>Patricia Flores Vargas</td><td><span class="type-badge com">Comercial</span></td><td>555-0108</td><td>Centro 456</td><td><span class="badge green">Activo</span></td></tr>
+                                        <tr><td>009</td><td>Fernando Castillo Gómez</td><td><span class="type-badge res">Residencial</span></td><td>555-0109</td><td>Villa Hermosa 78</td><td><span class="badge yellow">Inactivo</span></td></tr>
+                                        <tr><td>010</td><td>Gabriela Ortiz Mendoza</td><td><span class="type-badge com">Comercial</span></td><td>555-0110</td><td>Av. Reforma 321</td><td><span class="badge green">Activo</span></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Client form -->
+                    <div class="form-panel" id="clientForm">
+                        <h3><i class="ti ti-user-plus"></i> Registrar nuevo cliente</h3>
+                        <div class="form-group">
+                            <label>Nombre completo</label>
+                            <input type="text" placeholder="Nombre del cliente">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Tipo</label>
+                                <select><option>Residencial</option><option>Comercial</option><option>Industrial</option></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Teléfono</label>
+                                <input type="text" placeholder="555-0000">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Dirección</label>
+                            <input type="text" placeholder="Dirección completa">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Correo electrónico</label>
+                                <input type="text" placeholder="correo@ejemplo.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Frecuencia de servicio</label>
+                                <select><option>Mensual</option><option>Bimestral</option><option>Trimestral</option><option>Por demanda</option></select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Notas</label>
+                            <textarea placeholder="Información adicional..."></textarea>
+                        </div>
+                        <button class="btn btn-primary w-full" data-toast="Cliente guardado correctamente"><i class="ti ti-check"></i> Guardar cliente</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ SOLICITUDES ============ -->
+            <div id="screen-solicitudes" class="screen">
+                <div class="page-header">
+                    <div>
+                        <h2>Solicitudes</h2>
+                        <div class="sub">Todas las solicitudes de servicio</div>
+                    </div>
+                    <button class="btn btn-primary" data-toast="Solicitud creada correctamente"><i class="ti ti-plus"></i> Nueva solicitud</button>
+                </div>
+
+                <div class="filter-bar">
+                    <div class="search">
+                        <i class="ti ti-search"></i>
+                        <input type="text" placeholder="Buscar solicitud...">
+                    </div>
+                    <div class="filter-tabs" id="requestFilters">
+                        <span class="tab active" data-filter="all">Todas</span>
+                        <span class="tab" data-filter="pendiente">Pendiente</span>
+                        <span class="tab" data-filter="proceso">En proceso</span>
+                        <span class="tab" data-filter="completado">Completado</span>
+                        <span class="tab" data-filter="cancelado">Cancelado</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Listado de solicitudes</h3>
+                        <span class="text-secondary" style="font-size:12px">8 registros</span>
+                    </div>
+                    <div class="card-body" style="padding:0">
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr><th>#</th><th>Cliente</th><th>Tipo de servicio</th><th>Fecha</th><th>Técnico</th><th>Estado</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>101</td><td>Juan Pérez</td><td>Fumigación General</td><td>14/06/2026</td><td>Roberto Torres</td><td><span class="badge green">Completado</span></td></tr>
+                                    <tr><td>102</td><td>María García</td><td>Desratización</td><td>14/06/2026</td><td>Luis Mendoza</td><td><span class="badge blue">En proceso</span></td></tr>
+                                    <tr><td>103</td><td>Carlos López</td><td>Desinsectación</td><td>14/06/2026</td><td>Roberto Torres</td><td><span class="badge blue">En proceso</span></td></tr>
+                                    <tr><td>104</td><td>Ana Martínez</td><td>Sanitización</td><td>15/06/2026</td><td>Carlos Vega</td><td><span class="badge yellow">Pendiente</span></td></tr>
+                                    <tr><td>105</td><td>Roberto Sánchez</td><td>Control de Termitas</td><td>15/06/2026</td><td>Ana Rivas</td><td><span class="badge yellow">Pendiente</span></td></tr>
+                                    <tr><td>106</td><td>Laura Torres</td><td>Fumigación General</td><td>16/06/2026</td><td>Luis Mendoza</td><td><span class="badge yellow">Pendiente</span></td></tr>
+                                    <tr><td>107</td><td>Patricia Flores</td><td>Sanitización</td><td>12/06/2026</td><td>Carlos Vega</td><td><span class="badge red">Cancelado</span></td></tr>
+                                    <tr><td>108</td><td>Miguel Ángel Ruiz</td><td>Desratización</td><td>13/06/2026</td><td>Ana Rivas</td><td><span class="badge green">Completado</span></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ AGENDA ============ -->
+            <div id="screen-agenda" class="screen">
+                <div class="page-header">
+                    <div>
+                        <h2>Agenda</h2>
+                        <div class="sub">Calendario mensual de servicios</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="calendar-nav">
+                            <button onclick="changeMonth(-1)"><i class="ti ti-chevron-left"></i></button>
+                            <h3 id="calendarTitle">Junio 2026</h3>
+                            <button onclick="changeMonth(1)"><i class="ti ti-chevron-right"></i></button>
+                        </div>
+                        <button class="btn btn-sm" data-toast="Evento agregado al calendario"><i class="ti ti-calendar-plus"></i> Agregar evento</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="calendar-grid" id="calendarGrid">
+                            <div class="day-header">Dom</div>
+                            <div class="day-header">Lun</div>
+                            <div class="day-header">Mar</div>
+                            <div class="day-header">Mié</div>
+                            <div class="day-header">Jue</div>
+                            <div class="day-header">Vie</div>
+                            <div class="day-header">Sáb</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ INVENTARIO ============ -->
+            <div id="screen-inventario" class="screen">
+                <div class="page-header">
+                    <div>
+                        <h2>Inventario</h2>
+                        <div class="sub">Control de stock de productos e insumos</div>
+                    </div>
+                    <button class="btn btn-primary" data-toast="Producto agregado al inventario"><i class="ti ti-plus"></i> Agregar producto</button>
+                </div>
+
+                <div class="filter-bar">
+                    <div class="search">
+                        <i class="ti ti-search"></i>
+                        <input type="text" placeholder="Buscar producto...">
+                    </div>
+                    <div class="filter-tabs">
+                        <span class="tab active">Todos</span>
+                        <span class="tab">Crítico</span>
+                        <span class="tab">Bajo</span>
+                        <span class="tab">Normal</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Productos</h3>
+                        <span class="text-secondary" style="font-size:12px">10 productos</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="inv-item">
+                            <div class="top">
+                                <span class="name">Fipronil 500ml</span>
+                                <span class="stock"><span class="val" style="color:var(--danger)">18%</span> — 9 unid. <span class="badge red">Crítico</span></span>
+                            </div>
+                            <div class="progress"><div class="progress-bar" style="width:18%;background:var(--danger)"></div></div>
+                        </div>
+                        <div class="inv-item">
+                            <div class="top">
+                                <span class="name">Deltametrina 1L</span>
+                                <span class="stock"><span class="val" style="color:var(--warning)">32%</span> — 16 unid. <span class="badge yellow">Bajo</span></span>
+                            </div>
+                            <div class="progress"><div class="progress-bar" style="width:32%;background:var(--warning)"></div></div>
+                        </div>
+                        <div class="inv-item">
+                            <div class="top">
+                                <span class="name">Trampas gel (caja)</span>
+                                <span class="stock"><span class="val" style="color:var(--warning)">45%</span> — 9 cajas <span class="badge yellow">Bajo</span></span>
+                            </div>
+                            <div class="progress"><div class="progress-bar" style="width:45%;background:var(--warning)"></div></div>
+                        </div>
+                        <div class="inv-item">
+                            <div class="top">
+                                <span class="name">Mascarillas N95</span>
+                                <span class="stock"><span class="val" style="color:var(--danger)">12%</span> — 6 unid. <span class="badge red">Crítico</span></span>
+                            </div>
+                            <div class="progress"><div class="progress-bar" style="width:12%;background:var(--danger)"></div></div>
+                        </div>
+                        <div class="inv-item">
+                            <div class="top">
+                                <span class="name">Guantes de nitrilo (caja)</span>
+                                <span class="stock"><span class="val" style="color:var(--warning)">28%</span> — 14 pares <span class="badge yellow">Bajo</span></span>
+                            </div>
+                            <div class="progress"><div class="progress-bar" style="width:28%;background:var(--warning)"></div></div>
+                        </div>
+                        <div class="inv-item">
+                            <div class="top">
+                                <span class="name">Insecticida Lambda 1L</span>
+                                <span class="stock"><span class="val" style="color:var(--primary)">72%</span> — 36 unid. <span class="badge blue">Normal</span></span>
+                            </div>
+                            <div class="progress"><div class="progress-bar" style="width:72%;background:var(--primary)"></div></div>
+                        </div>
+                        <div class="inv-item">
+                            <div class="top">
+                                <span class="name">Cebo rodenticida (kg)</span>
+                                <span class="stock"><span class="val" style="color:var(--primary)">85%</span> — 42 kg <span class="badge blue">Normal</span></span>
+                            </div>
+                            <div class="progress"><div class="progress-bar" style="width:85%;background:var(--primary)"></div></div>
+                        </div>
+                        <div class="inv-item">
+                            <div class="top">
+                                <span class="name">Bomba aspersión 5L</span>
+                                <span class="stock"><span class="val" style="color:var(--primary)">60%</span> — 12 unid. <span class="badge blue">Normal</span></span>
+                            </div>
+                            <div class="progress"><div class="progress-bar" style="width:60%;background:var(--primary)"></div></div>
+                        </div>
+                        <div class="inv-item">
+                            <div class="top">
+                                <span class="name">Termicida 4L</span>
+                                <span class="stock"><span class="val" style="color:var(--primary)">90%</span> — 18 unid. <span class="badge green">Normal</span></span>
+                            </div>
+                            <div class="progress"><div class="progress-bar" style="width:90%;background:var(--success)"></div></div>
+                        </div>
+                        <div class="inv-item">
+                            <div class="top">
+                                <span class="name">Rociador manual</span>
+                                <span class="stock"><span class="val" style="color:var(--primary)">67%</span> — 20 unid. <span class="badge blue">Normal</span></span>
+                            </div>
+                            <div class="progress"><div class="progress-bar" style="width:67%;background:var(--primary)"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ PAGOS ============ -->
+            <div id="screen-pagos" class="screen">
+                <div class="page-header">
+                    <div>
+                        <h2>Pagos</h2>
+                        <div class="sub">Gestión de pagos y comprobantes</div>
+                    </div>
+                </div>
+
+                <div class="summary-grid">
+                    <div class="summary-card" style="border-left:3px solid var(--success)">
+                        <div class="sc-icon" style="color:var(--success)"><i class="ti ti-coin"></i></div>
+                        <div class="sc-value" style="color:var(--success)">$18,420</div>
+                        <div class="sc-label">Ingresos del mes</div>
+                    </div>
+                    <div class="summary-card" style="border-left:3px solid var(--warning)">
+                        <div class="sc-icon" style="color:var(--warning)"><i class="ti ti-clock"></i></div>
+                        <div class="sc-value" style="color:var(--warning)">$4,850</div>
+                        <div class="sc-label">Pendientes de cobro</div>
+                    </div>
+                    <div class="summary-card" style="border-left:3px solid var(--primary)">
+                        <div class="sc-icon" style="color:var(--primary)"><i class="ti ti-wallet"></i></div>
+                        <div class="sc-value">$13,570</div>
+                        <div class="sc-label">Estado de caja (disponible)</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Comprobantes</h3>
+                        <div class="btn-group">
+                            <button class="btn btn-sm" data-toast="Filtros aplicados" data-toast-type="info"><i class="ti ti-filter"></i> Filtrar</button>
+                            <button class="btn btn-sm btn-primary" data-toast="Nuevo comprobante creado"><i class="ti ti-plus"></i> Nuevo</button>
+                        </div>
+                    </div>
+                    <div class="card-body" style="padding:0">
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr><th>#</th><th>Cliente</th><th>Servicio</th><th>Monto</th><th>Fecha</th><th>Método</th><th>Estado</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>001</td><td>Juan Pérez</td><td>Fumigación General</td><td>$450</td><td>14/06/2026</td><td>Efectivo</td><td><span class="badge green">Pagado</span></td></tr>
+                                    <tr><td>002</td><td>María García</td><td>Desratización</td><td>$380</td><td>14/06/2026</td><td>Tarjeta</td><td><span class="badge green">Pagado</span></td></tr>
+                                    <tr><td>003</td><td>Carlos López</td><td>Desinsectación</td><td>$520</td><td>14/06/2026</td><td>Transferencia</td><td><span class="badge yellow">Pendiente</span></td></tr>
+                                    <tr><td>004</td><td>Ana Martínez</td><td>Sanitización</td><td>$600</td><td>13/06/2026</td><td>Efectivo</td><td><span class="badge green">Pagado</span></td></tr>
+                                    <tr><td>005</td><td>Roberto Sánchez</td><td>Control Termitas</td><td>$890</td><td>12/06/2026</td><td>Tarjeta</td><td><span class="badge green">Pagado</span></td></tr>
+                                    <tr><td>006</td><td>Laura Torres</td><td>Fumigación General</td><td>$450</td><td>16/06/2026</td><td>Transferencia</td><td><span class="badge yellow">Pendiente</span></td></tr>
+                                    <tr><td>007</td><td>Miguel Ángel Ruiz</td><td>Desratización</td><td>$720</td><td>11/06/2026</td><td>Efectivo</td><td><span class="badge green">Pagado</span></td></tr>
+                                    <tr><td>008</td><td>Patricia Flores</td><td>Sanitización</td><td>$380</td><td>10/06/2026</td><td>Tarjeta</td><td><span class="badge red">Cancelado</span></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+// Toast
+function showToast(msg, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    const t = document.createElement('div');
+    t.className = `toast toast-${type}`;
+    const icons = { success: 'check-circle', info: 'info-circle', warning: 'alert-triangle' };
+    t.innerHTML = `<i class="ti ti-${icons[type] || icons.success}"></i> ${msg}`;
+    container.appendChild(t);
+    setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(8px)'; t.style.transition = 'all .25s'; setTimeout(() => t.remove(), 250); }, 2800);
+}
+document.addEventListener('click', function(e) {
+    const btn = e.target.closest('[data-toast]');
+    if (btn) showToast(btn.dataset.toast, btn.dataset.toastType || 'success');
+});
+
+// Login
+function doLogin() {
+    document.getElementById('loginOverlay').classList.add('hidden');
+    document.getElementById('appLayout').style.display = 'flex';
+}
+function doLogout() {
+    document.getElementById('loginOverlay').classList.remove('hidden');
+    document.getElementById('appLayout').style.display = 'none';
+}
+
+// Navigation
+const navLinks = document.querySelectorAll('.sidebar nav a');
+const screens = {
+    dashboard: document.getElementById('screen-dashboard'),
+    clientes: document.getElementById('screen-clientes'),
+    solicitudes: document.getElementById('screen-solicitudes'),
+    agenda: document.getElementById('screen-agenda'),
+    inventario: document.getElementById('screen-inventario'),
+    pagos: document.getElementById('screen-pagos')
+};
+const pageTitles = {
+    dashboard: 'Dashboard',
+    clientes: 'Clientes',
+    solicitudes: 'Solicitudes',
+    agenda: 'Agenda',
+    inventario: 'Inventario',
+    pagos: 'Pagos'
+};
+
+navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        const screen = link.dataset.screen;
+        navLinks.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+        Object.keys(screens).forEach(key => {
+            screens[key].classList.toggle('active', key === screen);
+        });
+        document.getElementById('pageTitle').textContent = pageTitles[screen];
+    });
+});
+
+// Tabs / filters
+document.querySelectorAll('.filter-tabs').forEach(group => {
+    group.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            group.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            const label = tab.textContent.trim();
+            if (label) showToast(`Filtrando: ${label}`, 'info');
+        });
+    });
+});
+
+// Client form show
+function showClientForm() {
+    document.getElementById('clientForm').scrollIntoView({ behavior: 'smooth' });
+    showToast('Formulario de registro abierto', 'info');
+}
+
+// Date
+const now = new Date();
+const months = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+document.getElementById('currentDate').textContent = now.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+// Calendar
+let calDate = new Date(now.getFullYear(), now.getMonth(), 1);
+const events = [
+    { day: 2, title: 'Fumigación - Juan P.', color: 'blue' },
+    { day: 3, title: 'Desratización - María G.', color: 'green' },
+    { day: 5, title: 'Sanitización - Ana M.', color: 'orange' },
+    { day: 7, title: 'Desinsectación - Carlos L.', color: 'blue' },
+    { day: 10, title: 'Control Termitas - Roberto S.', color: 'orange' },
+    { day: 12, title: 'Fumigación - Laura T.', color: 'blue' },
+    { day: 14, title: 'Varios servicios', color: 'green' },
+    { day: 15, title: 'Sanitización - Patricia F.', color: 'orange' },
+    { day: 18, title: 'Desratización - Miguel R.', color: 'blue' },
+    { day: 21, title: 'Fumigación - Gabriela O.', color: 'green' },
+    { day: 22, title: 'Desinsectación - Carlos L.', color: 'blue' },
+    { day: 25, title: 'Capacitación equipo', color: 'green' },
+    { day: 28, title: 'Control Termitas - Roberto S.', color: 'orange' },
+    { day: 30, title: 'Fumigación - Juan P.', color: 'blue' },
+];
+
+function renderCalendar() {
+    const year = calDate.getFullYear();
+    const month = calDate.getMonth();
+    const title = document.getElementById('calendarTitle');
+    title.textContent = `${months[month]} ${year}`;
+
+    const grid = document.getElementById('calendarGrid');
+    const headers = Array.from(grid.querySelectorAll('.day-header'));
+    grid.innerHTML = '';
+    headers.forEach(h => grid.appendChild(h));
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const daysInPrev = new Date(year, month, 0).getDate();
+
+    // Previous month days
+    for (let i = firstDay - 1; i >= 0; i--) {
+        const d = document.createElement('div');
+        d.className = 'day other-month';
+        d.innerHTML = `<div class="date">${daysInPrev - i}</div>`;
+        grid.appendChild(d);
+    }
+
+    // Current month days
+    const today = now.getDate();
+    for (let i = 1; i <= daysInMonth; i++) {
+        const d = document.createElement('div');
+        d.className = 'day' + (i === today && now.getMonth() === month && now.getFullYear() === year ? ' today' : '');
+        let html = `<div class="date">${i}</div>`;
+        const dayEvents = events.filter(e => e.day === i);
+        dayEvents.forEach(e => {
+            html += `<div class="event ${e.color}">${e.title}</div>`;
+        });
+        d.innerHTML = html;
+        grid.appendChild(d);
+    }
+
+    // Next month days
+    const totalCells = grid.children.length;
+    const remaining = 42 - totalCells;
+    for (let i = 1; i <= remaining; i++) {
+        const d = document.createElement('div');
+        d.className = 'day other-month';
+        d.innerHTML = `<div class="date">${i}</div>`;
+        grid.appendChild(d);
+    }
+}
+
+function changeMonth(delta) {
+    calDate.setMonth(calDate.getMonth() + delta);
+    renderCalendar();
+    showToast(delta < 0 ? 'Mes anterior' : 'Mes siguiente', 'info');
+}
+
+renderCalendar();
+
+// Auto-hide client form initial toggle view
+// Simple search placeholder behavior
+document.querySelectorAll('.search input').forEach(inp => {
+    inp.addEventListener('input', function() {
+        // placeholder for search functionality
+    });
+});
+</script>
+<div id="toastContainer"></div>
+</body>
+</html>

@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kombat Pest Control — Portal Cliente</title>
+<link rel="icon" href="logo.jpeg" type="image/jpeg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--primary:#D4E900;--primary-dark:#a8c400;--primary-light:#e2f05e;--primary-bg:rgba(212,233,0,.1);--accent:#D4E900;--text:#0f172a;--text-secondary:#475569;--glass-bg:rgba(255,255,255,.1);--glass-border:rgba(255,255,255,.2);--glass-shadow:rgba(212,233,0,.06);--bw:0.5px;--radius:16px;--font:'Inter',system-ui,sans-serif}
+body{font-family:var(--font);min-height:100vh;background:linear-gradient(135deg,#f7fee7 0%,#ffffff 20%,#f0fdf4 45%,#fefce8 70%,#faf5ff 100%);background-attachment:fixed;color:var(--text);overflow-x:hidden}
+body::before{content:'';position:fixed;top:-25%;left:-5%;width:55%;height:55%;background:radial-gradient(circle,rgba(212,233,0,.08) 0%,transparent 70%);pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;bottom:-25%;right:-5%;width:50%;height:50%;background:radial-gradient(circle,rgba(0,0,0,.04) 0%,transparent 70%);pointer-events:none;z-index:0}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(212,233,0,.3);border-radius:3px}
+
+/* Glass utility */
+.glass{background:var(--glass-bg);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:var(--bw) solid var(--glass-border);border-radius:var(--radius);box-shadow:0 8px 32px var(--glass-shadow)}
+.glass-strong{background:rgba(255,255,255,.35);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:var(--bw) solid rgba(255,255,255,.25);border-radius:var(--radius);box-shadow:0 8px 32px var(--glass-shadow)}
+
+/* Layout */
+.app{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 24px}
+
+/* Topbar */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;margin-top:20px;margin-bottom:32px}
+.topbar .logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.topbar .logo i{font-size:26px;color:var(--primary)}
+.topbar .logo h1{font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.3px}
+.topbar .logo span{font-size:18px;font-weight:300;color:var(--text-secondary)}
+.topbar .nav{display:flex;align-items:center;gap:24px}
+.topbar .nav a{text-decoration:none;font-size:13px;font-weight:500;color:var(--text-secondary);padding:6px 0;border-bottom:2px solid transparent;transition:all .2s;cursor:pointer}
+.topbar .nav a:hover,.topbar .nav a.active{color:#0f172a;border-bottom-color:#D4E900}
+.topbar .user{display:flex;align-items:center;gap:10px}
+.topbar .user .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#D4E900,#a8c400);color:#0f172a;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600}
+.topbar .user .name{font-size:13px;font-weight:500}
+.topbar .user .name small{display:block;font-weight:400;font-size:11px;color:var(--text-secondary)}
+
+/* Hero */
+.hero{margin-bottom:40px}
+.hero h2{font-size:28px;font-weight:700;color:var(--text);margin-bottom:6px}
+.hero p{font-size:15px;color:var(--text-secondary);max-width:520px}
+
+/* Feature grid */
+.feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:40px}
+
+/* Feature cards */
+.feature-card{padding:28px;cursor:pointer;transition:all .3s ease;position:relative;overflow:hidden}
+.feature-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(37,99,235,.1)}
+.feature-card::before{content:'';position:absolute;top:-50%;right:-50%;width:100%;height:100%;background:radial-gradient(circle,rgba(37,99,235,.06) 0%,transparent 70%);border-radius:50%;pointer-events:none;transition:all .4s}
+.feature-card:hover::before{top:-30%;right:-30%}
+.feature-card .fc-icon{width:48px;height:48px;border-radius:12px;background:rgba(212,233,0,.12);display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:22px;color:var(--primary)}
+.feature-card h3{font-size:17px;font-weight:600;margin-bottom:6px}
+.feature-card p{font-size:13px;color:var(--text-secondary);line-height:1.5;margin-bottom:16px}
+.feature-card .fc-action{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#0f172a;padding:6px 0;border:none;background:none;cursor:pointer;font-family:var(--font);transition:gap .2s}
+.feature-card .fc-action:hover{gap:10px}
+
+/* Stats row */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:40px}
+.stat-card{padding:16px 20px;text-align:center}
+.stat-card .sc-value{font-size:22px;font-weight:700;color:#a8c400;margin-bottom:2px}
+.stat-card .sc-label{font-size:12px;color:var(--text-secondary);font-weight:500}
+
+/* Section title */
+.section-title{font-size:16px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+
+/* Detail panel */
+.detail-panel{display:none;margin-bottom:40px}
+.detail-panel.active{display:block}
+.detail-header{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.detail-header .back-btn{width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,.15);backdrop-filter:blur(12px);border:var(--bw) solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;color:var(--text-secondary);transition:all .2s;font-family:var(--font)}
+.detail-header .back-btn:hover{background:rgba(37,99,235,.15);color:var(--primary)}
+.detail-header h2{font-size:20px;font-weight:700}
+
+/* Detail card */
+.detail-card{padding:24px;margin-bottom:16px}
+.detail-card .dc-title{font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+
+/* Form styles */
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px}
+.form-group input,.form-group select{width:100%;padding:10px 12px;border:var(--bw) solid rgba(255,255,255,.2);border-radius:10px;font-size:13px;font-family:var(--font);color:var(--text);background:rgba(255,255,255,.3);backdrop-filter:blur(8px);outline:none;transition:border .2s}
+.form-group input:focus,.form-group select:focus{border-color:var(--primary)}
+.form-group textarea{width:100%;padding:10px 12px;border:var(--bw) solid rgba(255,255,255,.2);border-radius:10px;font-size:13px;font-family:var(--font);color:var(--text);background:rgba(255,255,255,.3);backdrop-filter:blur(8px);outline:none;resize:vertical;min-height:70px}
+.form-group textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:var(--font);transition:all .2s}
+.btn-primary{background:var(--primary);color:#0f172a}
+.btn-primary:hover{background:var(--primary-dark);box-shadow:0 4px 16px rgba(212,233,0,.3)}
+.btn-ghost{background:rgba(255,255,255,.15);backdrop-filter:blur(8px);color:#0f172a}
+.btn-ghost:hover{background:rgba(212,233,0,.2)}
+.btn-success{background:#059669;color:#fff}
+.btn-success:hover{background:#047857;box-shadow:0 4px 16px rgba(5,150,105,.3)}
+
+/* Status badges */
+.badge{display:inline-flex;align-items:center;padding:4px 12px;border-radius:100px;font-size:11px;font-weight:600;line-height:1.4}
+.badge.blue{background:rgba(212,233,0,.15);color:#4d5200}
+.badge.green{background:rgba(5,150,105,.12);color:#065f46}
+.badge.yellow{background:rgba(217,119,6,.12);color:#92400e}
+.badge.red{background:rgba(220,38,38,.12);color:#991b1b}
+.badge.purple{background:rgba(124,58,237,.12);color:#5b21b6}
+
+/* Table styles */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{text-align:left;padding:10px 12px;font-weight:600;color:var(--text-secondary);font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:var(--bw) solid rgba(255,255,255,.12)}
+tbody td{padding:10px 12px;border-bottom:var(--bw) solid rgba(255,255,255,.08);color:var(--text)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:rgba(255,255,255,.06)}
+
+/* Quote cards */
+.quote-item{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:var(--bw) solid rgba(255,255,255,.1)}
+.quote-item:last-child{border-bottom:none}
+.quote-item .qi-info .qi-title{font-size:13px;font-weight:600;margin-bottom:2px}
+.quote-item .qi-info .qi-meta{font-size:12px;color:var(--text-secondary)}
+.quote-item .qi-amount{font-size:16px;font-weight:700;color:var(--primary)}
+
+/* Appointment cards */
+.appointment-item{display:flex;justify-content:space-between;align-items:center;padding:16px;border-radius:12px;margin-bottom:10px;background:rgba(255,255,255,.2);backdrop-filter:blur(8px);border:var(--bw) solid rgba(255,255,255,.15)}
+.appointment-item .ai-info .ai-title{font-size:13px;font-weight:600;margin-bottom:2px}
+.appointment-item .ai-info .ai-meta{font-size:12px;color:var(--text-secondary)}
+.appointment-item .ai-info .ai-meta i{font-size:14px;margin-right:4px;vertical-align:middle}
+
+/* Footer */
+.footer{text-align:center;padding:24px 0;font-size:12px;color:var(--text-secondary)}
+
+/* Confirm step */
+.confirm-step{display:flex;align-items:center;gap:12px}
+.confirm-step .cs-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.confirm-step .cs-icon.done{background:rgba(5,150,105,.12);color:#059669}
+.confirm-step .cs-icon.pending{background:rgba(217,119,6,.12);color:#d97706}
+.confirm-step .cs-icon.current{background:rgba(37,99,235,.12);color:var(--primary)}
+.confirm-step .cs-text .cs-title{font-size:13px;font-weight:600}
+.confirm-step .cs-text .cs-desc{font-size:12px;color:var(--text-secondary)}
+
+/* Login overlay */
+.login-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:1000;transition:opacity .4s;background:linear-gradient(135deg,#f7fee7 0%,#ffffff 30%,#f0fdf4 70%,#fefce8 100%)}
+.login-overlay::before{content:'';position:fixed;top:-30%;left:-10%;width:60%;height:60%;background:radial-gradient(circle,rgba(212,233,0,.12) 0%,transparent 70%);pointer-events:none}
+.login-overlay::after{content:'';position:fixed;bottom:-20%;right:-10%;width:50%;height:50%;background:radial-gradient(circle,rgba(6,182,212,.1) 0%,transparent 70%);pointer-events:none}
+.login-overlay.hidden{opacity:0;pointer-events:none}
+.login-box{background:rgba(255,255,255,.25);backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);border:var(--bw) solid rgba(255,255,255,.2);border-radius:20px;padding:40px 36px 36px;width:360px;box-shadow:0 16px 48px rgba(212,233,0,.06)}
+.login-box .lb-logo{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.login-box .lb-logo i{font-size:38px;color:var(--primary)}
+.login-box .lb-logo h1{font-size:22px;font-weight:700;color:var(--text)}
+.login-box .lb-logo span{font-weight:300;color:var(--text-secondary)}
+.login-box .lb-sub{font-size:13px;color:var(--text-secondary);margin-bottom:24px}
+.login-box .form-group{margin-bottom:18px}
+.login-box .form-group label{display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:5px}
+.login-box .form-group .input-wrap{display:flex;align-items:center;background:rgba(255,255,255,.2);backdrop-filter:blur(12px);border:var(--bw) solid rgba(255,255,255,.15);border-radius:12px;padding:0 12px;transition:border .2s}
+.login-box .form-group .input-wrap:focus-within{border-color:var(--primary)}
+.login-box .form-group .input-wrap i{font-size:18px;color:var(--text-secondary)}
+.login-box .form-group .input-wrap input{flex:1;border:none;background:transparent;padding:11px 8px;font-size:13px;font-family:var(--font);color:var(--text);outline:none}
+.login-box .btn{width:100%;padding:12px;border-radius:12px;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:var(--font);transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.login-box .btn-primary{background:var(--primary);color:#0f172a}
+.login-box .btn-primary:hover{background:var(--primary-dark);box-shadow:0 8px 24px rgba(212,233,0,.25)}
+.login-box .login-footer{margin-top:18px;text-align:center;font-size:12px;color:var(--text-secondary)}
+
+/* Toast */
+#toastContainer{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{display:flex;align-items:center;gap:10px;padding:14px 20px;border-radius:14px;font-size:13px;font-weight:500;background:rgba(255,255,255,.25);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:var(--bw) solid rgba(255,255,255,.2);box-shadow:0 8px 32px rgba(37,99,235,.08);color:var(--text);pointer-events:auto;animation:toastIn .3s ease;max-width:380px}
+.toast i{font-size:20px}
+.toast.toast-success i{color:#059669}
+.toast.toast-info i{color:var(--primary)}
+.toast.toast-warning i{color:#d97706}
+@keyframes toastIn{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+/* Transitions */
+.screen{display:none}
+.screen.active{display:block}
+.fade-enter{animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Responsive */
+@media(max-width:768px){.app{padding:0 16px}.topbar{padding:12px 16px;flex-wrap:wrap;gap:12px}.topbar .nav{order:3;width:100%;justify-content:center;gap:16px}.hero h2{font-size:22px}.feature-grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.form-row{grid-template-columns:1fr}}
+@media(max-width:480px){.stats{grid-template-columns:1fr}.topbar .nav{gap:10px;overflow-x:auto;padding-bottom:4px}.topbar .nav a{white-space:nowrap;font-size:12px}}
+</style>
+</head>
+<body>
+
+<div class="login-overlay" id="loginOverlay">
+    <div class="login-box">
+        <div class="lb-logo">
+            <img src="logo.jpeg" alt="Kombat" style="width:38px;height:38px;border-radius:8px;object-fit:cover">
+            <div><h1>Kombat <span>Pest</span></h1></div>
+        </div>
+        <div class="lb-sub">Acceso al portal de clientes</div>
+        <div class="form-group">
+            <label>Correo electrónico</label>
+            <div class="input-wrap">
+                <i class="ti ti-mail"></i>
+                <input type="text" placeholder="correo@ejemplo.com" id="loginEmail" onkeydown="if(event.key==='Enter') doLogin()">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Contraseña</label>
+            <div class="input-wrap">
+                <i class="ti ti-lock"></i>
+                <input type="password" placeholder="••••••••" id="loginPass" onkeydown="if(event.key==='Enter') doLogin()">
+            </div>
+        </div>
+        <button class="btn btn-primary" onclick="doLogin()"><i class="ti ti-login"></i> Iniciar sesión</button>
+        <div class="login-footer">¿Olvidaste tu contraseña? <a href="#" style="color:var(--primary);text-decoration:none;font-weight:500">Recupérala aquí</a></div>
+    </div>
+</div>
+<div class="app" id="appContent" style="display:none">
+    <!-- Topbar -->
+    <div class="topbar glass">
+        <a href="#" class="logo" onclick="goHome()">
+            <img src="logo.jpeg" alt="Kombat" style="width:28px;height:28px;border-radius:6px;object-fit:cover">
+            <div>
+                <h1>Kombat <span>Pest</span></h1>
+            </div>
+        </a>
+        <div class="nav" id="mainNav">
+            <a class="active" data-screen="home">Inicio</a>
+            <a data-screen="agendar">Agendar</a>
+            <a data-screen="estado">Estado</a>
+            <a data-screen="cotizaciones">Cotizaciones</a>
+            <a data-screen="citas">Citas</a>
+        </div>
+        <div class="user">
+            <div class="name">
+                Juan Pérez
+                <small>Cliente</small>
+            </div>
+            <div class="avatar" style="cursor:pointer;position:relative" onclick="doLogout()" title="Cerrar sesión">JP</div>
+        </div>
+    </div>
+
+    <!-- ==================== HOME ==================== -->
+    <div id="screen-home" class="screen active">
+        <div class="hero fade-enter">
+            <h2>Bienvenido de nuevo, Juan</h2>
+            <p>Gestiona tus servicios de control de plagas desde un solo lugar. Agenda, consulta y confirma todo desde aquí.</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card glass-strong"><div class="sc-value">3</div><div class="sc-label">Servicios activos</div></div>
+            <div class="stat-card glass-strong"><div class="sc-value">1</div><div class="sc-label">Próxima cita</div></div>
+            <div class="stat-card glass-strong"><div class="sc-value">2</div><div class="sc-label">Cotizaciones</div></div>
+            <div class="stat-card glass-strong"><div class="sc-value">$1,250</div><div class="sc-label">Total pagado</div></div>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card glass" onclick="navigateTo('agendar')">
+                <div class="fc-icon"><i class="ti ti-calendar-plus"></i></div>
+                <h3>Agendar servicio</h3>
+                <p>Solicita un nuevo servicio de fumigación, desratización o sanitización en la fecha que prefieras.</p>
+                <span class="fc-action">Agendar ahora <i class="ti ti-arrow-right"></i></span>
+            </div>
+            <div class="feature-card glass" onclick="navigateTo('estado')">
+                <div class="fc-icon"><i class="ti ti-search"></i></div>
+                <h3>Consultar estado</h3>
+                <p>Verifica en tiempo real en qué etapa se encuentra tu solicitud de servicio.</p>
+                <span class="fc-action">Consultar <i class="ti ti-arrow-right"></i></span>
+            </div>
+            <div class="feature-card glass" onclick="navigateTo('cotizaciones')">
+                <div class="fc-icon"><i class="ti ti-file-invoice"></i></div>
+                <h3>Ver cotizaciones</h3>
+                <p>Revisa los presupuestos y costos emitidos para tus servicios solicitados.</p>
+                <span class="fc-action">Ver cotizaciones <i class="ti ti-arrow-right"></i></span>
+            </div>
+            <div class="feature-card glass" onclick="navigateTo('citas')">
+                <div class="fc-icon"><i class="ti ti-calendar-check"></i></div>
+                <h3>Confirmar citas</h3>
+                <p>Valida y confirma las fechas programadas para tus servicios.</p>
+                <span class="fc-action">Confirmar cita <i class="ti ti-arrow-right"></i></span>
+            </div>
+        </div>
+
+        <!-- Recent activity -->
+        <div class="section-title"><i class="ti ti-clock"></i> Actividad reciente</div>
+        <div class="detail-card glass-strong" style="padding:0">
+            <div style="padding:16px 20px">
+                <div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:0.5px solid rgba(255,255,255,.15)">
+                    <div style="width:32px;height:32px;border-radius:8px;background:rgba(5,150,105,.1);display:flex;align-items:center;justify-content:center;color:#059669"><i class="ti ti-check" style="font-size:16px"></i></div>
+                    <div style="flex:1"><div style="font-size:13px;font-weight:500">Fumigación en Av. Central 123</div><div style="font-size:11px;color:var(--text-secondary)">Completado &middot; 14 jun 2026</div></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:0.5px solid rgba(255,255,255,.15)">
+                    <div style="width:32px;height:32px;border-radius:8px;background:rgba(37,99,235,.1);display:flex;align-items:center;justify-content:center;color:var(--primary)"><i class="ti ti-refresh" style="font-size:16px"></i></div>
+                    <div style="flex:1"><div style="font-size:13px;font-weight:500">Desratización en Calle Roble 45</div><div style="font-size:11px;color:var(--text-secondary)">En proceso &middot; 14 jun 2026</div></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;padding:8px 0">
+                    <div style="width:32px;height:32px;border-radius:8px;background:rgba(217,119,6,.1);display:flex;align-items:center;justify-content:center;color:#d97706"><i class="ti ti-clock" style="font-size:16px"></i></div>
+                    <div style="flex:1"><div style="font-size:13px;font-weight:500">Sanitización en Blvd. Norte 890</div><div style="font-size:11px;color:var(--text-secondary)">Pendiente &middot; 16 jun 2026</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== AGENDAR ==================== -->
+    <div id="screen-agendar" class="screen">
+        <div class="detail-header">
+            <button class="back-btn" onclick="goHome()"><i class="ti ti-arrow-left"></i></button>
+            <h2>Agendar servicio</h2>
+        </div>
+
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px">
+            <div class="detail-card glass-strong fade-enter">
+                <div class="dc-title"><i class="ti ti-clipboard-text"></i> Datos del servicio</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tipo de servicio</label>
+                        <select>
+                            <option>Fumigación General</option>
+                            <option>Desratización</option>
+                            <option>Desinsectación</option>
+                            <option>Sanitización</option>
+                            <option>Control de Termitas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Urgencia</label>
+                        <select>
+                            <option>Normal (próximos 7 días)</option>
+                            <option>Urgente (24-48 hrs)</option>
+                            <option>Programado</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fecha preferida</label>
+                        <input type="date" value="2026-06-28">
+                    </div>
+                    <div class="form-group">
+                        <label>Horario preferido</label>
+                        <select>
+                            <option>08:00 - 10:00</option>
+                            <option>10:00 - 12:00</option>
+                            <option>12:00 - 14:00</option>
+                            <option>14:00 - 16:00</option>
+                            <option>16:00 - 18:00</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Dirección del servicio</label>
+                    <input type="text" value="Av. Central 123, Col. Centro">
+                </div>
+                <div class="form-group">
+                    <label>Notas adicionales</label>
+                    <textarea placeholder="Indica detalles como áreas específicas a tratar..."></textarea>
+                </div>
+                <button class="btn btn-primary" data-toast="Servicio solicitado correctamente"><i class="ti ti-send"></i> Solicitar servicio</button>
+            </div>
+
+            <div class="detail-card glass-strong fade-enter">
+                <div class="dc-title"><i class="ti ti-info-circle"></i> Próximos servicios</div>
+                <div style="font-size:12px;color:var(--text-secondary);margin-bottom:12px">Tus servicios programados</div>
+                <div style="padding:10px 12px;border-radius:10px;background:rgba(37,99,235,.06);margin-bottom:8px">
+                    <div style="font-size:13px;font-weight:500">Sanitización</div>
+                    <div style="font-size:11px;color:var(--text-secondary)">16 jun 2026 &middot; 13:00</div>
+                </div>
+                <div style="padding:10px 12px;border-radius:10px;background:rgba(37,99,235,.06)">
+                    <div style="font-size:13px;font-weight:500">Fumigación General</div>
+                    <div style="font-size:11px;color:var(--text-secondary)">28 jun 2026 &middot; 10:00</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== ESTADO ==================== -->
+    <div id="screen-estado" class="screen">
+        <div class="detail-header">
+            <button class="back-btn" onclick="goHome()"><i class="ti ti-arrow-left"></i></button>
+            <h2>Consultar estado</h2>
+        </div>
+
+        <div style="max-width:600px">
+            <div class="detail-card glass-strong fade-enter">
+                <div class="dc-title"><i class="ti ti-search"></i> Buscar solicitud</div>
+                <div style="display:flex;gap:10px">
+                    <input type="text" placeholder="Número de solicitud (ej: SOL-104)" style="flex:1;padding:10px 12px;border:0.5px solid rgba(255,255,255,.2);border-radius:10px;font-size:13px;font-family:var(--font);outline:none;background:rgba(255,255,255,.3);backdrop-filter:blur(8px)">
+                    <button class="btn btn-primary" data-toast="Buscando solicitud..." data-toast-type="info"><i class="ti ti-search"></i> Buscar</button>
+                </div>
+            </div>
+
+            <!-- Resultado ejemplo -->
+            <div class="detail-card glass-strong fade-enter" style="margin-top:16px">
+                <div class="dc-title"><i class="ti ti-file-description"></i> Solicitud <span class="badge blue">SOL-104</span></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+                    <div><div style="font-size:11px;color:var(--text-secondary);font-weight:600">CLIENTE</div><div style="font-size:13px">Juan Pérez Martínez</div></div>
+                    <div><div style="font-size:11px;color:var(--text-secondary);font-weight:600">SERVICIO</div><div style="font-size:13px">Sanitización</div></div>
+                    <div><div style="font-size:11px;color:var(--text-secondary);font-weight:600">FECHA</div><div style="font-size:13px">16 jun 2026</div></div>
+                    <div><div style="font-size:11px;color:var(--text-secondary);font-weight:600">TÉCNICO</div><div style="font-size:13px">Carlos Vega</div></div>
+                </div>
+                <div style="margin-bottom:14px">
+                    <div style="font-size:11px;color:var(--text-secondary);font-weight:600;margin-bottom:8px">ESTADO ACTUAL</div>
+                    <span class="badge blue" style="font-size:13px;padding:6px 16px"><i class="ti ti-refresh" style="margin-right:4px"></i> En proceso</span>
+                </div>
+                <div class="section-title" style="font-size:13px;margin-bottom:10px"><i class="ti ti-timeline"></i> Línea de tiempo</div>
+                <div class="confirm-step" style="margin-bottom:10px">
+                    <div class="cs-icon done"><i class="ti ti-check"></i></div>
+                    <div class="cs-text"><div class="cs-title">Solicitud recibida</div><div class="cs-desc">14 jun 2026 &middot; 10:30</div></div>
+                </div>
+                <div class="confirm-step" style="margin-bottom:10px">
+                    <div class="cs-icon current"><i class="ti ti-refresh"></i></div>
+                    <div class="cs-text"><div class="cs-title">En proceso</div><div class="cs-desc">Técnico asignado: Carlos Vega</div></div>
+                </div>
+                <div class="confirm-step" style="margin-bottom:10px">
+                    <div class="cs-icon pending"><i class="ti ti-clock"></i></div>
+                    <div class="cs-text"><div class="cs-title">Servicio realizado</div><div class="cs-desc">Pendiente</div></div>
+                </div>
+                <div class="confirm-step">
+                    <div class="cs-icon pending"><i class="ti ti-circle-check"></i></div>
+                    <div class="cs-text"><div class="cs-title">Finalizado</div><div class="cs-desc">Pendiente</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== COTIZACIONES ==================== -->
+    <div id="screen-cotizaciones" class="screen">
+        <div class="detail-header">
+            <button class="back-btn" onclick="goHome()"><i class="ti ti-arrow-left"></i></button>
+            <h2>Cotizaciones</h2>
+        </div>
+
+        <div class="detail-card glass-strong fade-enter">
+            <div class="dc-title"><i class="ti ti-file-invoice"></i> Presupuestos emitidos</div>
+            <div class="quote-item">
+                <div class="qi-info">
+                    <div class="qi-title">Fumigación General — Residencial</div>
+                    <div class="qi-meta">Av. Central 123 &middot; Emitido 10 jun 2026</div>
+                </div>
+                <div style="text-align:right">
+                    <div class="qi-amount">$450</div>
+                    <span class="badge green">Aprobado</span>
+                </div>
+            </div>
+            <div class="quote-item">
+                <div class="qi-info">
+                    <div class="qi-title">Desratización — Comercial</div>
+                    <div class="qi-meta">Calle Roble 45 &middot; Emitido 08 jun 2026</div>
+                </div>
+                <div style="text-align:right">
+                    <div class="qi-amount">$380</div>
+                    <span class="badge blue">Pendiente</span>
+                </div>
+            </div>
+            <div class="quote-item">
+                <div class="qi-info">
+                    <div class="qi-title">Sanitización Integral — Industrial</div>
+                    <div class="qi-meta">Blvd. Norte 890 &middot; Emitido 05 jun 2026</div>
+                </div>
+                <div style="text-align:right">
+                    <div class="qi-amount">$600</div>
+                    <span class="badge green">Aprobado</span>
+                </div>
+            </div>
+            <div class="quote-item" style="border-bottom:none">
+                <div class="qi-info">
+                    <div class="qi-title">Control de Termitas</div>
+                    <div class="qi-meta">Zona Industrial 7A &middot; Emitido 01 jun 2026</div>
+                </div>
+                <div style="text-align:right">
+                    <div class="qi-amount">$890</div>
+                    <span class="badge red">Vencido</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== CITAS ==================== -->
+    <div id="screen-citas" class="screen">
+        <div class="detail-header">
+            <button class="back-btn" onclick="goHome()"><i class="ti ti-arrow-left"></i></button>
+            <h2>Confirmar citas</h2>
+        </div>
+
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px">
+            <div>
+                <div class="detail-card glass-strong fade-enter" style="margin-bottom:16px">
+                    <div class="dc-title"><i class="ti ti-calendar-event"></i> Próximas citas</div>
+                    <div class="appointment-item">
+                        <div class="ai-info">
+                            <div class="ai-title">Sanitización — Av. Central 123</div>
+                            <div class="ai-meta"><i class="ti ti-calendar"></i> 16 jun 2026 &middot; <i class="ti ti-clock"></i> 13:00 &middot; Técnico: Carlos Vega</div>
+                        </div>
+                        <div style="text-align:right">
+                            <span class="badge yellow">Sin confirmar</span>
+                            <button class="btn btn-success" style="margin-top:8px;padding:6px 14px;font-size:12px" data-toast="Cita confirmada exitosamente"><i class="ti ti-check"></i> Confirmar</button>
+                        </div>
+                    </div>
+                    <div class="appointment-item">
+                        <div class="ai-info">
+                            <div class="ai-title">Fumigación — Calle Roble 45</div>
+                            <div class="ai-meta"><i class="ti ti-calendar"></i> 28 jun 2026 &middot; <i class="ti ti-clock"></i> 10:00 &middot; Técnico: Luis Mendoza</div>
+                        </div>
+                        <div style="text-align:right">
+                            <span class="badge green">Confirmada</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="detail-card glass-strong fade-enter">
+                    <div class="dc-title"><i class="ti ti-info-circle"></i> ¿Cómo funciona?</div>
+                    <div style="font-size:12px;color:var(--text-secondary);line-height:1.6">
+                        <p style="margin-bottom:10px">Al confirmar tu cita, el técnico recibirá una notificación y se asegurará tu horario.</p>
+                        <p style="margin-bottom:6px"><i class="ti ti-check-circle" style="color:#059669;font-size:14px;vertical-align:middle"></i> <strong>Confirmada:</strong> Todo listo</p>
+                        <p style="margin-bottom:6px"><i class="ti ti-clock" style="color:#d97706;font-size:14px;vertical-align:middle"></i> <strong>Sin confirmar:</strong> Revisa los detalles</p>
+                        <p><i class="ti ti-x-circle" style="color:#dc2626;font-size:14px;vertical-align:middle"></i> <strong>Cancelada:</strong> Comunicate con soporte</p>
+                    </div>
+                </div>
+                <div class="detail-card glass-strong fade-enter" style="margin-top:12px">
+                    <div class="dc-title"><i class="ti ti-message"></i> ¿Necesitas ayuda?</div>
+                    <div style="font-size:12px;color:var(--text-secondary);margin-bottom:12px">Contáctanos para reprogramar o cancelar</div>
+                    <button class="btn btn-ghost" style="width:100%" data-toast="Conectando con soporte..." data-toast-type="info"><i class="ti ti-headset"></i> Soporte</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        Kombat Pest Control &copy; 2026 &mdash; Todos los derechos reservados
+    </div>
+</div>
+
+<script>
+const screens = {
+    home: document.getElementById('screen-home'),
+    agendar: document.getElementById('screen-agendar'),
+    estado: document.getElementById('screen-estado'),
+    cotizaciones: document.getElementById('screen-cotizaciones'),
+    citas: document.getElementById('screen-citas'),
+};
+const navLinks = document.querySelectorAll('.nav a');
+
+function showScreen(id) {
+    Object.keys(screens).forEach(key => {
+        screens[key].classList.toggle('active', key === id);
+    });
+    navLinks.forEach(link => {
+        link.classList.toggle('active', link.dataset.screen === id);
+    });
+    // Add animation class
+    if (screens[id]) {
+        screens[id].querySelectorAll('.fade-enter').forEach(el => {
+            el.style.animation = 'none';
+            void el.offsetHeight;
+            el.style.animation = '';
+        });
+    }
+}
+
+function navigateTo(screen) {
+    showScreen(screen);
+    navLinks.forEach(link => {
+        link.classList.toggle('active', link.dataset.screen === screen);
+    });
+    const labels = { agendar: 'Agendando servicio...', estado: 'Consultando estado...', cotizaciones: 'Cargando cotizaciones...', citas: 'Mostrando citas...' };
+    if (labels[screen]) showToast(labels[screen], 'info');
+}
+
+function goHome() {
+    showScreen('home');
+    navLinks.forEach(link => {
+        link.classList.toggle('active', link.dataset.screen === 'home');
+    });
+}
+
+// Nav clicks
+navLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const screen = link.dataset.screen;
+        navigateTo(screen);
+    });
+});
+
+// Toast
+function showToast(msg, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    const t = document.createElement('div');
+    t.className = `toast toast-${type}`;
+    const icons = { success: 'check-circle', info: 'info-circle', warning: 'alert-triangle' };
+    t.innerHTML = `<i class="ti ti-${icons[type] || icons.success}"></i> ${msg}`;
+    container.appendChild(t);
+    setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(8px)'; t.style.transition = 'all .25s'; setTimeout(() => t.remove(), 250); }, 2800);
+}
+document.addEventListener('click', function(e) {
+    const btn = e.target.closest('[data-toast]');
+    if (btn) showToast(btn.dataset.toast, btn.dataset.toastType || 'success');
+});
+
+// Login
+function doLogin() {
+    document.getElementById('loginOverlay').classList.add('hidden');
+    document.getElementById('appContent').style.display = 'block';
+    setTimeout(() => showToast('Bienvenido a tu portal', 'info'), 400);
+}
+function doLogout() {
+    document.getElementById('loginOverlay').classList.remove('hidden');
+    document.getElementById('appContent').style.display = 'none';
+}
+</script>
+<div id="toastContainer"></div>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kombat Pest Control — Móvil</title>
+<link rel="icon" href="logo.jpeg" type="image/jpeg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bw:0.5px;--primary:#D4E900;--primary-dark:#a8c400;--success:#16a34a;--warning:#d97706;--danger:#dc2626;--text:#0f172a;--text-secondary:#475569;--font:'Inter',system-ui,sans-serif}
+body{font-family:var(--font);min-height:100vh;font-size:14px;background:linear-gradient(135deg,#f7fee7 0%,#ffffff 20%,#f0fdf4 45%,#fefce8 70%,#faf5ff 100%);background-attachment:fixed;color:var(--text)}
+body::before{content:'';position:fixed;top:-25%;left:-5%;width:55%;height:55%;background:radial-gradient(circle,rgba(212,233,0,.08) 0%,transparent 70%);pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;bottom:-25%;right:-5%;width:50%;height:50%;background:radial-gradient(circle,rgba(0,0,0,.04) 0%,transparent 70%);pointer-events:none;z-index:0}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(100,116,139,.25);border-radius:3px}
+
+/* Main */
+.main{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+
+/* Phone frame */
+.phone-frame{width:350px;background:rgba(255,255,255,.12);backdrop-filter:blur(8px);border:3px solid rgba(15,23,42,.12);border-radius:36px;padding:12px 8px;position:relative;box-shadow:0 16px 48px rgba(37,99,235,.08)}
+.phone-frame .notch{width:120px;height:24px;background:rgba(15,23,42,.8);border-radius:0 0 16px 16px;position:absolute;top:-3px;left:50%;transform:translateX(-50%)}
+.phone-frame .phone-inner{background:rgba(255,255,255,.35);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:24px;padding:16px 12px;min-height:520px;max-height:640px;overflow-y:auto;position:relative}
+/* Phone login */
+.phone-login{display:flex;flex-direction:column;align-items:center;padding:40px 12px 20px;text-align:center}
+.phone-login .pl-logo{margin-bottom:20px}
+.phone-login .pl-logo img{width:48px;height:48px;border-radius:10px}
+.phone-login h2{font-size:16px;font-weight:700;margin-bottom:2px}
+.phone-login .pl-sub{font-size:11px;color:var(--text-secondary);margin-bottom:24px}
+.phone-login .pf-group{width:100%;margin-bottom:14px;text-align:left}
+.phone-login .pf-group label{display:block;font-size:10px;font-weight:600;color:var(--text-secondary);margin-bottom:3px}
+.phone-login .pf-group input{width:100%;padding:9px 10px;border:var(--bw) solid rgba(255,255,255,.15);border-radius:8px;font-size:12px;font-family:var(--font);color:var(--text);background:rgba(255,255,255,.25);backdrop-filter:blur(4px);outline:none;transition:border .15s}
+.phone-login .pf-group input:focus{border-color:var(--primary)}
+.phone-login .pl-btn{width:100%;padding:9px;border-radius:8px;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:var(--font);background:var(--primary);color:#0f172a;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .15s}
+.phone-login .pl-btn:hover{background:var(--primary-dark)}
+#phoneApp{display:none}
+#phoneApp.active{display:block}
+.phone-frame .phone-inner .phone-header{font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:12px;display:flex;justify-content:space-between}
+.phone-service{padding:10px 0;border-bottom:var(--bw) solid rgba(255,255,255,.15)}
+.phone-service:last-child{border-bottom:none}
+.phone-service .ps-title{font-weight:600;font-size:12px;margin-bottom:2px}
+.phone-service .ps-meta{font-size:11px;color:var(--text-secondary)}
+.phone-section-title{font-size:11px;font-weight:600;color:var(--text);margin-bottom:8px;margin-top:4px;display:flex;align-items:center;gap:6px}
+.phone-divider{border:none;border-top:var(--bw) solid rgba(255,255,255,.15);margin:12px 0}
+.phone-form .pf-group{margin-bottom:10px}
+.phone-form .pf-group label{display:block;font-size:10px;font-weight:600;color:var(--text-secondary);margin-bottom:2px}
+.phone-form .pf-group input,.phone-form .pf-group select,.phone-form .pf-group textarea{width:100%;padding:6px 8px;border:var(--bw) solid rgba(255,255,255,.15);border-radius:6px;font-size:11px;font-family:var(--font);color:var(--text);background:rgba(255,255,255,.25);backdrop-filter:blur(4px);outline:none;transition:border .15s}
+.phone-form .pf-group input:focus,.phone-form .pf-group select:focus,.phone-form .pf-group textarea:focus{border-color:var(--primary)}
+.phone-form .pf-group textarea{min-height:40px;resize:none}
+.phone-form .pf-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.phone-bottom-nav{margin-top:12px;padding-top:10px;border-top:var(--bw) solid rgba(255,255,255,.15);display:flex;justify-content:space-around;font-size:10px;color:var(--text-secondary)}
+.phone-bottom-nav span{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+.phone-bottom-nav span i{font-size:16px}
+.phone-bottom-nav span.active{color:var(--primary)}
+.badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:100px;font-size:10px;font-weight:600}
+.badge.green{background:rgba(5,150,105,.12);color:#166534}
+.badge.blue{background:rgba(37,99,235,.12);color:#1e40af}
+.badge.yellow{background:rgba(217,119,6,.12);color:#92400e}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;border:var(--bw) solid rgba(255,255,255,.2);background:rgba(255,255,255,.2);backdrop-filter:blur(8px);color:var(--text);cursor:pointer;font-family:var(--font);transition:all .15s}
+.btn-primary{background:var(--primary);color:#0f172a;border-color:var(--primary)}
+.btn-primary:hover{background:var(--primary-dark)}
+.page-header{text-align:center;margin-bottom:8px}
+.page-header h2{font-size:18px;font-weight:600}
+.page-header .sub{font-size:13px;color:var(--text-secondary)}
+/* Toast */
+#toastContainer{position:absolute;bottom:8px;left:8px;right:8px;z-index:10;display:flex;flex-direction:column;gap:4px;pointer-events:none}
+.toast{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;font-size:11px;font-weight:500;background:rgba(15,23,42,.75);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:var(--bw) solid rgba(255,255,255,.1);box-shadow:0 4px 16px rgba(0,0,0,.15);color:#fff;pointer-events:auto;animation:toastIn .3s ease}
+.toast i{font-size:16px}
+.toast.toast-success i{color:#4ade80}
+.toast.toast-info i{color:#D4E900}
+.toast.toast-warning i{color:#fbbf24}
+.toast i{font-size:20px}
+.toast.toast-success i{color:#16a34a}
+.toast.toast-info i{color:var(--primary)}
+.toast.toast-warning i{color:#d97706}
+@keyframes toastIn{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+</style>
+</head>
+<body>
+
+<div class="main">
+    <div class="phone-frame">
+        <div class="notch"></div>
+        <div class="phone-inner">
+            <!-- LOGIN VIEW -->
+            <div id="phoneLogin" class="phone-login">
+                <div class="pl-logo"><img src="logo.jpeg" alt="Kombat"></div>
+                <h2>Kombat Pest</h2>
+                <div class="pl-sub">Acceso para técnicos de campo</div>
+                <div class="pf-group"><label>Usuario</label><input type="text" placeholder="usuario" id="loginUser" onkeydown="if(event.key==='Enter') doLogin()"></div>
+                <div class="pf-group"><label>Contraseña</label><input type="password" placeholder="••••••••" id="loginPass" onkeydown="if(event.key==='Enter') doLogin()"></div>
+                <button class="pl-btn" onclick="doLogin()"><i class="ti ti-login"></i> Iniciar sesión</button>
+            </div>
+
+            <!-- APP VIEW -->
+            <div id="phoneApp">
+                <div class="phone-header">
+                    <span><i class="ti ti-spray"></i> Kombat Pest</span>
+                    <span><i class="ti ti-signal"></i> 14:30</span>
+                </div>
+
+                <div class="phone-section-title"><i class="ti ti-list-check"></i> Servicios de hoy</div>
+                <div class="phone-service">
+                    <div class="ps-title">Fumigación - Juan Pérez <span class="badge green" style="float:right">Ok</span></div>
+                    <div class="ps-meta">08:00 - Av. Central 123</div>
+                </div>
+                <div class="phone-service">
+                    <div class="ps-title">Desratización - María García <span class="badge blue" style="float:right">En ruta</span></div>
+                    <div class="ps-meta">09:30 - Calle Roble 45</div>
+                </div>
+                <div class="phone-service">
+                    <div class="ps-title">Desinsectación - Carlos López <span class="badge blue" style="float:right">En ruta</span></div>
+                    <div class="ps-meta">11:00 - Zona Industrial 7A</div>
+                </div>
+                <div class="phone-service">
+                    <div class="ps-title">Sanitización - Ana Martínez <span class="badge yellow" style="float:right">Pendiente</span></div>
+                    <div class="ps-meta">13:00 - Blvd. Norte 890</div>
+                </div>
+                <div class="phone-service">
+                    <div class="ps-title">Control Termitas - R. Sánchez <span class="badge yellow" style="float:right">Pendiente</span></div>
+                    <div class="ps-meta">14:30 - Calle Comercio 56</div>
+                </div>
+
+                <hr class="phone-divider">
+
+                <div class="phone-section-title"><i class="ti ti-clipboard-check"></i> Formulario de inspección</div>
+                <div class="phone-form">
+                    <div class="pf-row">
+                        <div class="pf-group"><label>Cliente</label><select><option>Juan Pérez</option><option>María García</option><option>Carlos López</option></select></div>
+                        <div class="pf-group"><label>Servicio</label><select><option>Fumigación</option><option>Desratización</option><option>Desinsectación</option><option>Sanitización</option></select></div>
+                    </div>
+                    <div class="pf-group"><label>Producto utilizado</label><select><option>Fipronil 500ml</option><option>Deltametrina 1L</option><option>Insecticida Lambda 1L</option><option>Cebo rodenticida</option></select></div>
+                    <div class="pf-row">
+                        <div class="pf-group"><label>Cantidad</label><input type="text" placeholder="Ej: 200ml"></div>
+                        <div class="pf-group"><label>Duración</label><input type="text" placeholder="45 min"></div>
+                    </div>
+                    <div class="pf-group"><label>Observaciones</label><textarea placeholder="Resultado del servicio..."></textarea></div>
+                    <div class="pf-group"><label>Reaplicación</label><select><option>No requiere</option><option>Sí - en 15 días</option><option>Sí - en 30 días</option></select></div>
+                    <div style="display:flex;gap:6px;margin-top:10px">
+                        <button class="btn btn-primary" style="flex:1;padding:7px;font-size:11px" data-toast="Servicio completado correctamente"><i class="ti ti-check"></i> Completar</button>
+                        <button class="btn" style="flex:1;padding:7px;font-size:11px" data-toast="Foto capturada" data-toast-type="info"><i class="ti ti-camera"></i> Foto</button>
+                    </div>
+                </div>
+
+                <div class="phone-bottom-nav">
+                    <span class="active"><i class="ti ti-home"></i> Inicio</span>
+                    <span><i class="ti ti-clipboard-list"></i> Lista</span>
+                    <span><i class="ti ti-calendar"></i> Agenda</span>
+                    <span><i class="ti ti-user"></i> Perfil</span>
+                </div>
+            </div>
+
+            <div id="toastContainer"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showToast(msg, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    const t = document.createElement('div');
+    t.className = `toast toast-${type}`;
+    const icons = { success: 'check-circle', info: 'info-circle', warning: 'alert-triangle' };
+    t.innerHTML = `<i class="ti ti-${icons[type] || icons.success}"></i> ${msg}`;
+    container.appendChild(t);
+    setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(8px)'; t.style.transition = 'all .25s'; setTimeout(() => t.remove(), 250); }, 2800);
+}
+document.addEventListener('click', function(e) {
+    const btn = e.target.closest('[data-toast]');
+    if (btn) showToast(btn.dataset.toast, btn.dataset.toastType || 'success');
+});
+function doLogin() {
+    document.getElementById('phoneLogin').style.display = 'none';
+    document.getElementById('phoneApp').classList.add('active');
+    setTimeout(function(){showToast('Sesión iniciada','info')}, 300);
+}
+</script>
+</body>
+</html>
