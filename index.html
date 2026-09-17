@@ -462,7 +462,7 @@ input[type="text"]:focus,input[type="search"]:focus{border-color:var(--primary)}
                         <h2>Solicitudes</h2>
                         <div class="sub">Todas las solicitudes de servicio</div>
                     </div>
-                    <button class="btn btn-primary" data-toast="Solicitud creada correctamente"><i class="ti ti-plus"></i> Nueva solicitud</button>
+                    <button class="btn btn-primary" onclick="showRequestForm()"> <i class="ti ti-plus"></i> Nueva solicitud </button>
                 </div>
 
                 <div class="filter-bar">
@@ -505,6 +505,129 @@ input[type="text"]:focus,input[type="search"]:focus{border-color:var(--primary)}
                     </div>
                 </div>
             </div>
+
+            <!-- ============ FORMULARIO NUEVA SOLICITUD ============ -->
+<div class="form-panel" id="requestForm" style="display:none; margin-top:20px;">
+
+    <h3>
+        <i class="ti ti-file-plus"></i> Registrar nueva solicitud
+    </h3>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>Nombre del cliente</label>
+            <input type="text" id="requestClient" placeholder="Nombre completo">
+        </div>
+
+        <div class="form-group">
+            <label>Teléfono</label>
+            <input type="text" id="requestPhone" placeholder="555-0000">
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>Canal de solicitud</label>
+            <select id="requestChannel">
+                <option value="">Seleccionar canal</option>
+                <option value="telefono">Teléfono</option>
+                <option value="correo">Correo electrónico</option>
+                <option value="whatsapp">WhatsApp</option>
+                <option value="otro">Otro</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Tipo de servicio</label>
+            <select id="requestService" onchange="calcularCotizacionSolicitud()">
+                <option value="">Seleccionar servicio</option>
+                <option value="fumigacion">Fumigación General</option>
+                <option value="desratizacion">Desratización</option>
+                <option value="desinsectacion">Desinsectación</option>
+                <option value="sanitizacion">Sanitización</option>
+                <option value="termitas">Control de Termitas</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>Producto adicional</label>
+            <select id="requestProduct" onchange="calcularCotizacionSolicitud()">
+                <option value="ninguno">Ninguno</option>
+                <option value="producto1">Producto 1</option>
+                <option value="producto2">Producto 2</option>
+                <option value="producto3">Producto 3</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Fecha preferida</label>
+            <input type="date" id="requestDate">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Dirección del servicio</label>
+        <input type="text" id="requestAddress" placeholder="Dirección completa">
+    </div>
+
+    <div class="form-group">
+        <label>Observaciones</label>
+        <textarea id="requestNotes"
+            placeholder="Información adicional de la solicitud..."></textarea>
+    </div>
+
+    <!-- COTIZACIÓN -->
+    <div class="detail-card" style="margin-top:16px;">
+
+        <div class="dc-title">
+            <i class="ti ti-file-invoice"></i> Cotización automática
+        </div>
+
+        <div id="cotizacionSolicitudVacia"
+             style="font-size:12px;color:var(--text-secondary);">
+            Selecciona un servicio para calcular la cotización.
+        </div>
+
+        <div id="cotizacionSolicitudResultado"
+             style="display:none;font-size:13px;">
+
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                <span>Servicio</span>
+                <strong id="precioSolicitudServicio">$0.00</strong>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                <span>Producto</span>
+                <strong id="precioSolicitudProducto">$0.00</strong>
+            </div>
+
+            <hr style="border:0;border-top:1px solid rgba(0,0,0,.1);margin:12px 0;">
+
+            <div style="display:flex;justify-content:space-between;font-size:15px;">
+                <strong>Total</strong>
+                <strong id="totalSolicitud">$0.00</strong>
+            </div>
+
+        </div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:16px;">
+
+        <button class="btn btn-primary"
+                onclick="registrarSolicitud()">
+            <i class="ti ti-check"></i> Registrar solicitud
+        </button>
+
+        <button class="btn"
+                onclick="hideRequestForm()">
+            Cancelar
+        </button>
+
+    </div>
+
+</div>
 
             <!-- ============ AGENDA ============ -->
             <div id="screen-agenda" class="screen">
@@ -864,6 +987,154 @@ document.querySelectorAll('.search input').forEach(inp => {
         // placeholder for search functionality
     });
 });
+
+// ==================== NUEVA SOLICITUD ====================
+
+const preciosServiciosSolicitud = {
+    fumigacion: 250,
+    desratizacion: 300,
+    desinsectacion: 275,
+    sanitizacion: 350,
+    termitas: 500
+};
+
+const preciosProductosSolicitud = {
+    ninguno: 0,
+    producto1: 50,
+    producto2: 75,
+    producto3: 60
+};
+
+
+// Mostrar formulario
+function showRequestForm() {
+    document.getElementById('requestForm').style.display = 'block';
+
+    document.getElementById('requestForm').scrollIntoView({
+        behavior: 'smooth'
+    });
+}
+
+
+// Ocultar formulario
+function hideRequestForm() {
+    document.getElementById('requestForm').style.display = 'none';
+}
+
+
+// Calcular cotización automáticamente
+function calcularCotizacionSolicitud() {
+
+    const servicio =
+        document.getElementById('requestService').value;
+
+    const producto =
+        document.getElementById('requestProduct').value;
+
+    // Si no hay servicio seleccionado
+    if (!servicio) {
+
+        document.getElementById(
+            'cotizacionSolicitudVacia'
+        ).style.display = 'block';
+
+        document.getElementById(
+            'cotizacionSolicitudResultado'
+        ).style.display = 'none';
+
+        return;
+    }
+
+    const precioServicio =
+        preciosServiciosSolicitud[servicio];
+
+    const precioProducto =
+        preciosProductosSolicitud[producto];
+
+    const total =
+        precioServicio + precioProducto;
+
+
+    // Mostrar precios
+    document.getElementById(
+        'precioSolicitudServicio'
+    ).textContent =
+        '$' + precioServicio.toFixed(2);
+
+    document.getElementById(
+        'precioSolicitudProducto'
+    ).textContent =
+        '$' + precioProducto.toFixed(2);
+
+    document.getElementById(
+        'totalSolicitud'
+    ).textContent =
+        '$' + total.toFixed(2);
+
+
+    // Cambiar vista
+    document.getElementById(
+        'cotizacionSolicitudVacia'
+    ).style.display = 'none';
+
+    document.getElementById(
+        'cotizacionSolicitudResultado'
+    ).style.display = 'block';
+}
+
+
+// Registrar solicitud
+function registrarSolicitud() {
+
+    const cliente =
+        document.getElementById('requestClient').value.trim();
+
+    const telefono =
+        document.getElementById('requestPhone').value.trim();
+
+    const canal =
+        document.getElementById('requestChannel').value;
+
+    const servicio =
+        document.getElementById('requestService').value;
+
+    const fecha =
+        document.getElementById('requestDate').value;
+
+    const direccion =
+        document.getElementById('requestAddress').value.trim();
+
+
+    // Validar campos obligatorios
+    if (
+        !cliente ||
+        !telefono ||
+        !canal ||
+        !servicio ||
+        !fecha ||
+        !direccion
+    ) {
+
+        showToast(
+            'Completa los campos obligatorios',
+            'warning'
+        );
+
+        return;
+    }
+
+
+    // Registrar solicitud
+    showToast(
+        'Solicitud registrada y cotización generada correctamente',
+        'success'
+    );
+
+
+    // Ocultar formulario
+    hideRequestForm();
+}
+    
 </script>
 <div id="toastContainer"></div>
 </body>
